@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Compass, Sparkles, Smile, Frown, ShieldAlert, Award, ChevronRight } from 'lucide-react';
+import { Compass, Sparkles, Smile, Frown, ShieldAlert, Award, ChevronRight, BookOpen } from 'lucide-react';
+import PsychosocialTests from '../components/PsychosocialTests';
 import './DashboardEstudiante.css';
 
 const emotions = [
@@ -17,12 +18,16 @@ const badges = [
 
 export default function DashboardEstudiante() {
     const [selectedEmotion, setSelectedEmotion] = useState(null);
+    const [currentTest, setCurrentTest] = useState(null); // 'vak' o 'situacional'
+
+    if (currentTest) {
+        return <PsychosocialTests type={currentTest} onBack={() => setCurrentTest(null)} />;
+    }
 
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
             className="dashboard-student"
         >
             <header className="dash-header">
@@ -34,74 +39,101 @@ export default function DashboardEstudiante() {
                 <div className="stats-glass">
                     <div className="stat">
                         <span className="stat-val text-gradient">Nivel 4</span>
-                        <span className="stat-label">Autoconocimiento</span>
+                        <span className="stat-label">Resiliencia</span>
                     </div>
                     <div className="stat">
-                        <span className="stat-val text-gradient">20%</span>
-                        <span className="stat-label">Progreso Test ERE</span>
+                        <span className="stat-val text-gradient">2 / 4</span>
+                        <span className="stat-label">Tests Completados</span>
                     </div>
                 </div>
             </header>
 
             <div className="grid-layout">
-                <section className="glass-panel module-card">
-                    <div className="card-header">
-                        <h3>Diario de Granularidad Emocional</h3>
-                        <span className="badge-new">Nuevo</span>
-                    </div>
-                    <p className="card-desc">Selecciona la emoción que más resuena contigo en este momento de la jornada escolar.</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
 
-                    <div className="emotions-grid">
-                        {emotions.map((emotion) => {
-                            const Icon = emotion.icon;
-                            const isSelected = selectedEmotion === emotion.id;
+                    <section className="glass-panel module-card">
+                        <div className="card-header">
+                            <h3>Diario de Granularidad Emocional</h3>
+                            <span className="badge-new">Rápido</span>
+                        </div>
+                        <p className="card-desc">Selecciona la emoción que más resuena contigo en este momento de la jornada escolar.</p>
 
-                            return (
-                                <motion.button
-                                    key={emotion.id}
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    onClick={() => setSelectedEmotion(emotion.id)}
-                                    className={`emotion-btn ${isSelected ? 'selected' : ''}`}
-                                    style={{
-                                        borderColor: isSelected ? emotion.color : 'var(--border-color)',
-                                        boxShadow: isSelected ? `0 0 20px ${emotion.color}40` : 'none'
-                                    }}
+                        <div className="emotions-grid">
+                            {emotions.map((emotion) => {
+                                const Icon = emotion.icon;
+                                const isSelected = selectedEmotion === emotion.id;
+
+                                return (
+                                    <motion.button
+                                        key={emotion.id}
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        onClick={() => setSelectedEmotion(emotion.id)}
+                                        className={`emotion-btn ${isSelected ? 'selected' : ''}`}
+                                        style={{
+                                            borderColor: isSelected ? emotion.color : 'var(--border-color)',
+                                            boxShadow: isSelected ? `0 0 20px ${emotion.color}40` : 'none'
+                                        }}
+                                    >
+                                        <Icon size={28} color={emotion.color} />
+                                        <span style={{ color: isSelected ? emotion.color : 'var(--text-muted)' }}>
+                                            {emotion.label}
+                                        </span>
+                                    </motion.button>
+                                )
+                            })}
+                        </div>
+
+                        <AnimatePresence>
+                            {selectedEmotion && (
+                                <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: 'auto' }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    className="emotion-feedback"
                                 >
-                                    <Icon size={28} color={emotion.color} />
-                                    <span style={{ color: isSelected ? emotion.color : 'var(--text-muted)' }}>
-                                        {emotion.label}
-                                    </span>
-                                </motion.button>
-                            )
-                        })}
-                    </div>
+                                    ¡Gracias! Tu profesor podrá ver tu estado emocional grupal para apoyarte mejor.
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </section>
 
-                    <AnimatePresence>
-                        {selectedEmotion && (
-                            <motion.div
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: 'auto' }}
-                                exit={{ opacity: 0, height: 0 }}
-                                className="emotion-feedback"
-                            >
-                                ¡Gracias por registrarlo! Conocer lo que sientes es el primer paso para dominarlo.
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+                    <section className="glass-panel module-card">
+                        <div className="card-header">
+                            <h3><BookOpen size={20} color="var(--primary)" /> Encuestas Psicosociales</h3>
+                        </div>
+                        <p className="card-desc">Completa estos instrumentos para que tus clases se adapten a tu forma de ser.</p>
 
-                </section>
+                        <div className="grid-layout" style={{ gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1rem' }}>
+                            <div className="test-promo glass-panel" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)' }}>
+                                <h4>Estilos de Aprendizaje</h4>
+                                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0.5rem 0' }}>Modelo VAK: Visual, Auditivo o Kinestésico.</p>
+                                <button className="btn btn-secondary" onClick={() => setCurrentTest('vak')}>Iniciar Test</button>
+                            </div>
+                            <div className="test-promo glass-panel" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)' }}>
+                                <h4>Bienestar Escolar</h4>
+                                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0.5rem 0' }}>Escala de Satisfacción con la Vida Estudiantil.</p>
+                                <button className="btn btn-secondary" disabled>Próximamente</button>
+                            </div>
+                        </div>
+                    </section>
+
+                </div>
 
                 <div className="desktop-sidebar">
                     <section className="glass-panel module-card">
-                        <h3>Test Situacional (DCSE-J)</h3>
+                        <h3>Test Situacional (Diagnóstico)</h3>
                         <div className="situational-test-preview">
                             <div className="story-snippet">
-                                <h4>"El trabajo en grupo"</h4>
-                                <p>Tus compañeros no están participando y quedan 2 días para entregar el trabajo de Historia. ¿Qué decides hacer?</p>
+                                <h4>"El desafío grupal"</h4>
+                                <p>Una historia interactiva para medir tu asertividad ante un conflicto escolar.</p>
                             </div>
-                            <button className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
-                                Iniciar Historia <ChevronRight size={18} />
+                            <button
+                                className="btn btn-primary"
+                                style={{ width: '100%', marginTop: '1rem' }}
+                                onClick={() => setCurrentTest('situacional')}
+                            >
+                                Empezar Historia <ChevronRight size={18} />
                             </button>
                         </div>
                     </section>
