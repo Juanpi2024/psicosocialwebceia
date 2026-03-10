@@ -34,6 +34,22 @@ const vakQuestions = [
     }
 ];
 
+// --- DATA: RESILIENCIA (SV-RES - 12 Dimensiones) ---
+const resilienceQuestions = [
+    { id: 1, dim: 'Identidad', question: "Siento que tengo claro quién soy y qué cosas me definen como persona." },
+    { id: 2, dim: 'Autonomía', question: "Me siento capaz de tomar mis propias decisiones, incluso si otros no están de acuerdo." },
+    { id: 3, dim: 'Satisfacción', question: "En general, estoy satisfecho con lo que he logrado y con cómo es mi vida hoy." },
+    { id: 4, dim: 'Pragmatismo', question: "Cuando tengo un problema, busco soluciones prácticas en vez de quedarme solo pensando en el problema." },
+    { id: 5, dim: 'Vínculos', question: "Siento que tengo relaciones de confianza y cariño con personas importantes para mí." },
+    { id: 6, dim: 'Redes', question: "Sé exactamente a quién pedir ayuda (amigos, familia, profesores) si tengo una dificultad grave." },
+    { id: 7, dim: 'Modelos', question: "Tengo personas a las que admiro y que me sirven de ejemplo para superar mis problemas." },
+    { id: 8, dim: 'Metas', question: "Tengo metas claras para mi futuro y tengo un plan para lograrlas." },
+    { id: 9, dim: 'Afectividad', question: "Puedo reírme de mis errores y expresar mis emociones sin miedo." },
+    { id: 10, dim: 'Autoeficacia', question: "Confío en que puedo manejar bien el estrés y las situaciones difíciles." },
+    { id: 11, dim: 'Aprendizaje', question: "Siento que las dificultades me han enseñado lecciones valiosas para la vida." },
+    { id: 12, dim: 'Generatividad', question: "Siento que mis experiencias pueden servir para ayudar o aconsejar a otros." }
+];
+
 // --- DATA: HISTORIA SITUACIONAL (DCSE-J) ---
 const situationalStory = {
     title: "El Desafío del Trabajo Grupal",

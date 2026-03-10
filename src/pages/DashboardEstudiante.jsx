@@ -111,9 +111,9 @@ export default function DashboardEstudiante() {
                                 <button className="btn btn-secondary" onClick={() => setCurrentTest('vak')}>Iniciar Test</button>
                             </div>
                             <div className="test-promo glass-panel" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)' }}>
-                                <h4>Bienestar Escolar</h4>
-                                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0.5rem 0' }}>Escala de Satisfacción con la Vida Estudiantil.</p>
-                                <button className="btn btn-secondary" disabled>Próximamente</button>
+                                <h4>Resiliencia (SV-RES)</h4>
+                                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0.5rem 0' }}>Evaluación de las 12 dimensiones de Saavedra.</p>
+                                <button className="btn btn-secondary" onClick={() => setCurrentTest('svres')}>Iniciar Test</button>
                             </div>
                         </div>
                     </section>
