@@ -5,9 +5,7 @@ import { HeartPulse, LayoutDashboard, Search, Users } from 'lucide-react';
 
 import DashboardEstudiante from './pages/DashboardEstudiante';
 import DashboardProfesor from './pages/DashboardProfesor';
-
-// Placeholder Pages
-const PortalFamilias = () => <div className="glass-panel" style={{ padding: '3rem', textAlign: 'center' }}><h2>Módulo Familias (Metodología RES-F)</h2></div>;
+import PortalFamilias from './pages/PortalFamilias';
 
 function App() {
   return (
