@@ -18,10 +18,62 @@ const badges = [
 
 export default function DashboardEstudiante() {
     const [selectedEmotion, setSelectedEmotion] = useState(null);
-    const [currentTest, setCurrentTest] = useState(null); // 'vak' o 'situacional'
+    const [currentTest, setCurrentTest] = useState(null); // 'vak' o 'dcsej'
+
+    // Estado para recolectar información del alumno
+    const [studentInfo, setStudentInfo] = useState({ id: '', nombre: '', curso: '' });
+    const [showIdentityForm, setShowIdentityForm] = useState(false);
+    const [pendingTest, setPendingTest] = useState(null);
+
+    const handleStartTestSequence = (testId) => {
+        // En un futuro esto se obtendría del login. Por ahora, forzamos que ingresen sus datos.
+        if (!studentInfo.id || !studentInfo.nombre) {
+            setPendingTest(testId);
+            setShowIdentityForm(true);
+        } else {
+            setCurrentTest(testId);
+        }
+    };
+
+    const handleIdentitySubmit = (e) => {
+        e.preventDefault();
+        if (studentInfo.id && studentInfo.nombre) {
+            setShowIdentityForm(false);
+            setCurrentTest(pendingTest);
+        }
+    };
 
     if (currentTest) {
-        return <PsychosocialTests type={currentTest} onBack={() => setCurrentTest(null)} />;
+        return <PsychosocialTests type={currentTest} studentInfo={studentInfo} onBack={() => setCurrentTest(null)} />;
+    }
+
+    if (showIdentityForm) {
+        return (
+            <div className="dashboard-student" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
+                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass-panel" style={{ padding: '2rem', maxWidth: '400px', width: '100%' }}>
+                    <h2 style={{ marginBottom: '1rem' }}>Identificación</h2>
+                    <p style={{ marginBottom: '1.5rem', color: 'var(--text-muted)' }}>Ingresa tus datos antes de comenzar el test para guardar tu resultado correctamente.</p>
+                    <form onSubmit={handleIdentitySubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>RUT o Identificador</label>
+                            <input required type="text" value={studentInfo.id} onChange={e => setStudentInfo({ ...studentInfo, id: e.target.value })} placeholder="Ej: 21.000.000-K" className="glass-input" style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white' }} />
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Nombre Completo</label>
+                            <input required type="text" value={studentInfo.nombre} onChange={e => setStudentInfo({ ...studentInfo, nombre: e.target.value })} placeholder="Ej: Juan Pérez" className="glass-input" style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white' }} />
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Curso</label>
+                            <input required type="text" value={studentInfo.curso} onChange={e => setStudentInfo({ ...studentInfo, curso: e.target.value })} placeholder="Ej: 3° Medio A" className="glass-input" style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white' }} />
+                        </div>
+                        <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                            <button type="button" className="btn btn-secondary" onClick={() => setShowIdentityForm(false)} style={{ flex: 1 }}>Cancelar</button>
+                            <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>Comenzar Test</button>
+                        </div>
+                    </form>
+                </motion.div>
+            </div>
+        );
     }
 
     return (
@@ -108,12 +160,12 @@ export default function DashboardEstudiante() {
                             <div className="test-promo glass-panel" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)' }}>
                                 <h4>Estilos de Aprendizaje</h4>
                                 <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0.5rem 0' }}>Modelo VAK: Visual, Auditivo o Kinestésico.</p>
-                                <button className="btn btn-secondary" onClick={() => setCurrentTest('vak')}>Iniciar Test</button>
+                                <button className="btn btn-secondary" onClick={() => handleStartTestSequence('vak')}>Iniciar Test</button>
                             </div>
                             <div className="test-promo glass-panel" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)' }}>
                                 <h4>Resiliencia (SV-RES)</h4>
                                 <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0.5rem 0' }}>Evaluación de las 12 dimensiones de Saavedra.</p>
-                                <button className="btn btn-secondary" onClick={() => setCurrentTest('svres')}>Iniciar Test</button>
+                                <button className="btn btn-secondary" onClick={() => handleStartTestSequence('svres')}>Iniciar Test</button>
                             </div>
                         </div>
                     </section>
@@ -125,13 +177,13 @@ export default function DashboardEstudiante() {
                         <h3>Test Situacional (Diagnóstico)</h3>
                         <div className="situational-test-preview">
                             <div className="story-snippet">
-                                <h4>"El desafío grupal"</h4>
-                                <p>Una historia interactiva para medir tu asertividad ante un conflicto escolar.</p>
+                                <h4>"Historias Interactivas"</h4>
+                                <p>Explora cómo reaccionas ante situaciones escolares cotidianas y mide tu comportamiento asertivo.</p>
                             </div>
                             <button
                                 className="btn btn-primary"
                                 style={{ width: '100%', marginTop: '1rem' }}
-                                onClick={() => setCurrentTest('situacional')}
+                                onClick={() => handleStartTestSequence('dcsej')}
                             >
                                 Empezar Historia <ChevronRight size={18} />
                             </button>

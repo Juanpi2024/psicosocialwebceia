@@ -1,7 +1,20 @@
 .dashboard-student {
     display: flex;
     flex-direction: column;
-    gap: 2.5rem;
+    gap: 3rem;
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .dash-header {
@@ -10,28 +23,39 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .greeting {
-    font-size: 2.5rem;
-    font-weight: 700;
+    font-size: 2.75rem;
+    font-weight: 800;
     margin-bottom: 0.5rem;
+    letter-spacing: -0.03em;
 }
 
 .subtitle {
     color: var(--text-muted);
-    font-size: 1.1rem;
+    font-size: 1.15rem;
+    font-weight: 400;
 }
 
 .stats-glass {
     display: flex;
-    gap: 1.5rem;
+    gap: 2rem;
     background: var(--bg-surface);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    padding: 1rem 1.5rem;
-    border-radius: var(--radius-lg);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    padding: 1.25rem 2rem;
+    border-radius: var(--radius-xl);
     border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg);
+    transition: var(--transition);
+}
+
+.stats-glass:hover {
+    border-color: var(--border-glow);
+    box-shadow: 0 10px 40px -10px rgba(99, 102, 241, 0.15);
 }
 
 .stat {
@@ -41,21 +65,23 @@
 }
 
 .stat-val {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--text-main);
 }
 
 .stat-label {
     font-size: 0.85rem;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.1em;
+    font-weight: 600;
 }
 
 .grid-layout {
     display: grid;
     grid-template-columns: 2fr 1fr;
-    gap: 2rem;
+    gap: 2.5rem;
 }
 
 @media (max-width: 1024px) {
@@ -65,42 +91,50 @@
 }
 
 .module-card {
-    padding: 2rem;
+    padding: 2.5rem;
     position: relative;
     overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .card-header {
     display: flex;
     align-items: center;
     gap: 1rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
 }
 
 .card-header h3 {
-    font-size: 1.25rem;
+    font-size: 1.4rem;
+    font-weight: 700;
 }
 
 .badge-new {
-    background: rgba(16, 185, 129, 0.2);
-    color: #10B981;
-    padding: 0.2rem 0.6rem;
+    background: rgba(52, 211, 153, 0.15);
+    color: var(--secondary);
+    padding: 0.25rem 0.75rem;
     border-radius: 9999px;
     font-size: 0.75rem;
-    font-weight: 600;
-    border: 1px solid rgba(16, 185, 129, 0.3);
+    font-weight: 700;
+    border: 1px solid rgba(52, 211, 153, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .card-desc {
     color: var(--text-muted);
-    font-size: 0.95rem;
-    margin-bottom: 2rem;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 2.5rem;
 }
 
 .emotions-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
     gap: 1.5rem;
+    margin-top: auto;
 }
 
 .emotion-btn {
@@ -109,43 +143,53 @@
     align-items: center;
     gap: 1rem;
     padding: 1.5rem 1rem;
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.02);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
     cursor: pointer;
-    transition: all 0.2s ease;
-    font-weight: 500;
+    transition: var(--transition);
+    font-weight: 600;
+    color: var(--text-muted);
 }
 
 .emotion-btn:hover {
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--border-glow);
+    color: var(--text-main);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
 }
 
 .emotion-btn.selected {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(99, 102, 241, 0.15);
+    border-color: var(--primary);
+    color: var(--primary);
+    box-shadow: 0 0 20px var(--primary-glow);
 }
 
 .emotion-feedback {
-    margin-top: 2rem;
+    margin-top: 2.5rem;
     background: rgba(99, 102, 241, 0.1);
     border: 1px solid rgba(99, 102, 241, 0.3);
-    padding: 1rem;
+    padding: 1.5rem;
     border-radius: var(--radius-md);
     color: #e0e7ff;
     font-weight: 500;
     overflow: hidden;
     text-align: center;
+    animation: fadeIn 0.4s ease-out;
 }
 
 .desktop-sidebar {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 2.5rem;
 }
 
 .situational-test-preview {
     display: flex;
     flex-direction: column;
+    height: 100%;
 }
 
 .story-snippet {
@@ -153,16 +197,19 @@
     padding: 1.5rem;
     border-radius: var(--radius-md);
     border-left: 3px solid var(--primary);
+    margin-top: auto;
 }
 
 .story-snippet h4 {
     margin-bottom: 0.5rem;
     color: var(--text-main);
+    font-size: 1.1rem;
 }
 
 .story-snippet p {
     color: var(--text-muted);
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
 }
 
 .badges-list {
@@ -174,34 +221,37 @@
 .badge-item {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    background: rgba(255, 255, 255, 0.03);
+    gap: 1.25rem;
+    padding: 1.25rem;
+    background: rgba(255, 255, 255, 0.02);
     border-radius: var(--radius-md);
     border: 1px solid var(--border-color);
-    transition: transform 0.2s ease;
+    transition: var(--transition);
 }
 
 .badge-item:hover {
     transform: translateX(5px);
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--border-glow);
 }
 
 .badge-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 9999px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .badge-info h4 {
-    font-size: 0.95rem;
+    font-size: 1rem;
+    font-weight: 600;
     margin-bottom: 0.2rem;
+    color: var(--text-main);
 }
 
 .badge-info p {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: var(--text-muted);
 }
