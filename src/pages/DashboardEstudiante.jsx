@@ -22,24 +22,16 @@ export default function DashboardEstudiante() {
 
     // Estado para recolectar información del alumno
     const [studentInfo, setStudentInfo] = useState({ id: '', nombre: '', curso: '' });
-    const [showIdentityForm, setShowIdentityForm] = useState(false);
-    const [pendingTest, setPendingTest] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     const handleStartTestSequence = (testId) => {
-        // En un futuro esto se obtendría del login. Por ahora, forzamos que ingresen sus datos.
-        if (!studentInfo.id || !studentInfo.nombre) {
-            setPendingTest(testId);
-            setShowIdentityForm(true);
-        } else {
-            setCurrentTest(testId);
-        }
+        setCurrentTest(testId);
     };
 
     const handleIdentitySubmit = (e) => {
         e.preventDefault();
-        if (studentInfo.id && studentInfo.nombre) {
-            setShowIdentityForm(false);
-            setCurrentTest(pendingTest);
+        if (studentInfo.id && studentInfo.nombre && studentInfo.curso) {
+            setIsAuthenticated(true);
         }
     };
 
@@ -47,28 +39,29 @@ export default function DashboardEstudiante() {
         return <PsychosocialTests type={currentTest} studentInfo={studentInfo} onBack={() => setCurrentTest(null)} />;
     }
 
-    if (showIdentityForm) {
+    if (!isAuthenticated) {
         return (
             <div className="dashboard-student" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
-                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass-panel" style={{ padding: '2rem', maxWidth: '400px', width: '100%' }}>
-                    <h2 style={{ marginBottom: '1rem' }}>Identificación</h2>
-                    <p style={{ marginBottom: '1.5rem', color: 'var(--text-muted)' }}>Ingresa tus datos antes de comenzar el test para guardar tu resultado correctamente.</p>
-                    <form onSubmit={handleIdentitySubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="glass-panel" style={{ padding: '2.5rem', maxWidth: '450px', width: '100%', display: 'flex', flexDirection: 'column', gap: '1.5rem', borderTop: '4px solid var(--primary)' }}>
+                    <div>
+                        <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: 'var(--text-main)', fontWeight: 800 }}>Bienvenido</h2>
+                        <p style={{ color: 'var(--text-muted)', lineHeight: 1.5 }}>Para personalizar tu experiencia y guardar tus resultados correctamente, por favor ingresa tus datos académicos.</p>
+                    </div>
+                    <form onSubmit={handleIdentitySubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                         <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>RUT o Identificador</label>
-                            <input required type="text" value={studentInfo.id} onChange={e => setStudentInfo({ ...studentInfo, id: e.target.value })} placeholder="Ej: 21.000.000-K" className="glass-input" style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white' }} />
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-main)' }}>RUT o Identificador</label>
+                            <input required type="text" value={studentInfo.id} onChange={e => setStudentInfo({ ...studentInfo, id: e.target.value })} placeholder="Ej: 21.000.000-K" className="glass-input" style={{ width: '100%', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'rgba(255,255,255,0.03)', color: 'var(--text-main)', fontSize: '1rem', outline: 'none', transition: 'var(--transition)' }} />
                         </div>
                         <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Nombre Completo</label>
-                            <input required type="text" value={studentInfo.nombre} onChange={e => setStudentInfo({ ...studentInfo, nombre: e.target.value })} placeholder="Ej: Juan Pérez" className="glass-input" style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white' }} />
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-main)' }}>Nombre Completo</label>
+                            <input required type="text" value={studentInfo.nombre} onChange={e => setStudentInfo({ ...studentInfo, nombre: e.target.value })} placeholder="Ej: Juan Pérez" className="glass-input" style={{ width: '100%', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'rgba(255,255,255,0.03)', color: 'var(--text-main)', fontSize: '1rem', outline: 'none', transition: 'var(--transition)' }} />
                         </div>
                         <div>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Curso</label>
-                            <input required type="text" value={studentInfo.curso} onChange={e => setStudentInfo({ ...studentInfo, curso: e.target.value })} placeholder="Ej: 3° Medio A" className="glass-input" style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)', color: 'white' }} />
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-main)' }}>Curso</label>
+                            <input required type="text" value={studentInfo.curso} onChange={e => setStudentInfo({ ...studentInfo, curso: e.target.value })} placeholder="Ej: 3° Medio A" className="glass-input" style={{ width: '100%', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', background: 'rgba(255,255,255,0.03)', color: 'var(--text-main)', fontSize: '1rem', outline: 'none', transition: 'var(--transition)' }} />
                         </div>
-                        <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-                            <button type="button" className="btn btn-secondary" onClick={() => setShowIdentityForm(false)} style={{ flex: 1 }}>Cancelar</button>
-                            <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>Comenzar Test</button>
+                        <div style={{ marginTop: '1rem' }}>
+                            <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '1rem', fontSize: '1.1rem', fontWeight: 700 }}>Ingresar a mi Dashboard</button>
                         </div>
                     </form>
                 </motion.div>
@@ -84,7 +77,7 @@ export default function DashboardEstudiante() {
         >
             <header className="dash-header">
                 <div>
-                    <h1 className="greeting">Hola, <span className="text-gradient">Estudiante</span> 👋</h1>
+                    <h1 className="greeting">Hola, <span className="text-gradient">{studentInfo.nombre.split(' ')[0] || 'Estudiante'}</span> 👋</h1>
                     <p className="subtitle">Tu mapa psicosocial de hoy. ¿Cómo está tu brújula interior?</p>
                 </div>
 
@@ -158,14 +151,14 @@ export default function DashboardEstudiante() {
 
                         <div className="grid-layout" style={{ gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1rem' }}>
                             <div className="test-promo glass-panel" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)' }}>
-                                <h4>Estilos de Aprendizaje</h4>
-                                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0.5rem 0' }}>Modelo VAK: Visual, Auditivo o Kinestésico.</p>
-                                <button className="btn btn-secondary" onClick={() => handleStartTestSequence('vak')}>Iniciar Test</button>
+                                <h4>Cuestionario CHAEA</h4>
+                                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0.5rem 0' }}>Estilos de aprendizaje: Activo, Reflexivo, Teórico, Pragmático.</p>
+                                <button className="btn btn-secondary" onClick={() => handleStartTestSequence('chaea')}>Iniciar Test</button>
                             </div>
                             <div className="test-promo glass-panel" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)' }}>
-                                <h4>Resiliencia (SV-RES)</h4>
-                                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0.5rem 0' }}>Evaluación de las 12 dimensiones de Saavedra.</p>
-                                <button className="btn btn-secondary" onClick={() => handleStartTestSequence('svres')}>Iniciar Test</button>
+                                <h4>Adaptación Socioemocional</h4>
+                                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0.5rem 0' }}>Diagnóstico DIA: Área Emocional, Aprendizaje e Interacción Social.</p>
+                                <button className="btn btn-secondary" onClick={() => handleStartTestSequence('socioemocional')}>Iniciar Test</button>
                             </div>
                         </div>
                     </section>
@@ -173,22 +166,7 @@ export default function DashboardEstudiante() {
                 </div>
 
                 <div className="desktop-sidebar">
-                    <section className="glass-panel module-card">
-                        <h3>Test Situacional (Diagnóstico)</h3>
-                        <div className="situational-test-preview">
-                            <div className="story-snippet">
-                                <h4>"Historias Interactivas"</h4>
-                                <p>Explora cómo reaccionas ante situaciones escolares cotidianas y mide tu comportamiento asertivo.</p>
-                            </div>
-                            <button
-                                className="btn btn-primary"
-                                style={{ width: '100%', marginTop: '1rem' }}
-                                onClick={() => handleStartTestSequence('dcsej')}
-                            >
-                                Empezar Historia <ChevronRight size={18} />
-                            </button>
-                        </div>
-                    </section>
+
 
                     <section className="glass-panel module-card badges-card">
                         <h3>Praise Badges <Award size={18} style={{ color: 'var(--accent)', marginLeft: '8px' }} /></h3>

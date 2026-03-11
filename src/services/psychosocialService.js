@@ -41,20 +41,21 @@ export const getDCSEJSituations = async () => {
  * Guarda el resultado final de un test en Firebase.
  * @param {string} studentId - ID o RUT del estudiante.
  * @param {string} studentName - Nombre del estudiante.
- * @param {string} testId - 'vak' o 'dcse_j'.
+ * @param {string} curso - Curso del estudiante.
+ * @param {string} testId - 'chaea' o 'socioemocional'.
  * @param {object} scores - Objeto con los puntajes obtenidos.
- * @param {string} profile - Perfil dominante (VAK) o Nivel (DCSE-J).
- * @param {array} answers - Historial de respuestas seleccionadas por el alumno.
+ * @param {string} profile - Perfil dominante o Estado.
+ * @param {array} answers - Historial de respuestas.
  */
-export const saveTestResult = async (studentId, studentName, testId, scores, profile, answers) => {
+export const saveTestResult = async (studentId, studentName, curso, testId, scores, profile, answers) => {
     try {
-        // Generar un ID único para este resultado, por ejemplo: R12345678-vak-1678234321
         const uniqueId = `${studentId}-${testId}-${Date.now()}`;
         const resultRef = doc(db, 'resultados', uniqueId);
 
         await setDoc(resultRef, {
             studentId,
             studentName,
+            curso: curso || 'Sin especificar',
             testId,
             scores,
             profile,
@@ -65,6 +66,24 @@ export const saveTestResult = async (studentId, studentName, testId, scores, pro
         return uniqueId;
     } catch (error) {
         console.error("Error guardando el resultado del test:", error);
+        throw error;
+    }
+};
+
+/**
+ * Obtiene todos los resultados almacenados ordenados por fecha de forma descendente.
+ */
+export const getTestResults = async () => {
+    try {
+        const q = query(collection(db, 'resultados'), orderBy('completedAt', 'desc'));
+        const querySnapshot = await getDocs(q);
+        const results = [];
+        querySnapshot.forEach((doc) => {
+            results.push({ id: doc.id, ...doc.data() });
+        });
+        return results;
+    } catch (error) {
+        console.error("Error obteniendo resultados:", error);
         throw error;
     }
 };
