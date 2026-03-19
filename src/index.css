@@ -11,6 +11,9 @@
   /* Emerald 500 */
   --accent: #fb7185;
   /* Rose 400 */
+  --gradient-primary: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+  --gradient-success: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  --gradient-warning: linear-gradient(135deg, #facc15 0%, #eab308 100%);
 
   /* Core Backgrounds - Premium Dark Mode */
   --bg-body: #030712;
