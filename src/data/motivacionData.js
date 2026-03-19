@@ -1,0 +1,40 @@
+export const motivacionQuestions = [
+    { id: 1, text: "Sinceramente no lo sé; tengo la impresión de perder el tiempo", dimension: "Amotivación" },
+    { id: 2, text: "No lo sé; no llego a entender qué hago en el colegio", dimension: "Amotivación" },
+    { id: 3, text: "Antes tenía buenas razones para venir, pero ahora no las veo", dimension: "Amotivación" },
+    { id: 4, text: "A veces me pregunto si vale la pena continuar estudiando", dimension: "Amotivación" },
+    { id: 5, text: "Para tener un sueldo alto en el futuro", dimension: "Regulación Externa" },
+    { id: 6, text: "Porque me permite entrar en el mercado laboral después", dimension: "Regulación Externa" },
+    { id: 7, text: "Para tener una vida más cómoda más tarde", dimension: "Regulación Externa" },
+    { id: 8, text: "Para evitar problemas con mi familia o entorno", dimension: "Regulación Externa" },
+    { id: 9, text: "Para demostrarme que soy una persona inteligente", dimension: "Regulación Introyectada" },
+    { id: 10, text: "Porque me hace sentir importante cuando tengo éxito", dimension: "Regulación Introyectada" },
+    { id: 11, text: "Para demostrar que soy capaz de terminar mis estudios", dimension: "Regulación Introyectada" },
+    { id: 12, text: "Porque quiero ser alguien en la vida", dimension: "Regulación Introyectada" },
+    { id: 13, text: "Porque me ayudará a prepararme mejor para la profesión elegida", dimension: "Regulación Identificada" },
+    { id: 14, text: "Porque creo que la educación me permitirá mejorar como persona", dimension: "Regulación Identificada" },
+    { id: 15, text: "Porque lo que aprendo aquí me será útil en el futuro", dimension: "Regulación Identificada" },
+    { id: 16, text: "Porque considero que es importante para mi desarrollo personal", dimension: "Regulación Identificada" },
+    { id: 17, text: "Por el placer que siento cuando descubro cosas nuevas", dimension: "MI Conocimiento" },
+    { id: 18, text: "Por el placer de aprender cosas que nunca antes había visto", dimension: "MI Conocimiento" },
+    { id: 19, text: "Porque me gusta profundizar en temas que me interesan", dimension: "MI Conocimiento" },
+    { id: 20, text: "Por la satisfacción de ampliar mis conocimientos", dimension: "MI Conocimiento" },
+    { id: 21, text: "Por la satisfacción que siento cuando supero actividades difíciles", dimension: "MI Logro" },
+    { id: 22, text: "Por el placer de superarme en mis estudios", dimension: "MI Logro" },
+    { id: 23, text: "Por la satisfacción que experimento al realizar trabajos excelentes", dimension: "MI Logro" },
+    { id: 24, text: "Porque me gusta el reto de aprender materias complicadas", dimension: "MI Logro" },
+    { id: 25, text: "Porque realmente me gusta asistir a clase", dimension: "MI Experiencias Estimulantes" },
+    { id: 26, text: "Por la emoción de leer sobre temas interesantes", dimension: "MI Experiencias Estimulantes" },
+    { id: 27, text: "Por el placer de participar en debates en clase", dimension: "MI Experiencias Estimulantes" },
+    { id: 28, text: "Porque me siento bien cuando estoy absorto en mis tareas", dimension: "MI Experiencias Estimulantes" }
+];
+
+export const motivacionScale = [
+    { value: 1, label: "No se corresponde en absoluto" },
+    { value: 2, label: "Se corresponde muy poco" },
+    { value: 3, label: "Se corresponde un poco" },
+    { value: 4, label: "Se corresponde moderadamente" },
+    { value: 5, label: "Se corresponde bastante" },
+    { value: 6, label: "Se corresponde mucho" },
+    { value: 7, label: "Se corresponde totalmente" }
+];

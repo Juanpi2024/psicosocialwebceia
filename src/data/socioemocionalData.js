@@ -1,27 +1,33 @@
 export const socioemocionalQuestions = [
-    { id: 1, text: "Tengo dificultades para expresar lo que siento", inverted: true, dimension: "GestionEmocional" },
-    { id: 2, text: "Suelo hacer cosas sin pensar en las consecuencias", inverted: true, dimension: "GestionEmocional" },
-    { id: 3, text: "Prefiero estar solo en lugar de relacionarme con otras personas", inverted: true, dimension: "GestionEmocional" },
-    { id: 4, text: "Me resulta difícil encontrar la solución a los problemas que se me presentan", inverted: true, dimension: "GestionEmocional" },
-    { id: 5, text: "Me resulta difícil decir lo que pienso", inverted: true, dimension: "GestionEmocional" },
-    { id: 6, text: "Me he dado cuenta de que tengo dificultades para expresarme o hablar en público", inverted: true, dimension: "GestionEmocional" },
-    { id: 7, text: "Me cuesta acostumbrarme a los lugares nuevos para mí", inverted: true, dimension: "GestionEmocional" },
-    { id: 8, text: "Me resulta difícil comprender a las personas y ponerme en su lugar", inverted: true, dimension: "GestionEmocional" },
-    { id: 9, text: "Creo que las personas que me conocen no me aprecian demasiado", inverted: true, dimension: "GestionEmocional" },
-    { id: 10, text: "Creo que no soy capaz de entender las cosas que siento", inverted: true, dimension: "GestionEmocional" },
-    { id: 11, text: "Trabajo concentrado en una tarea hasta completarla", inverted: false, dimension: "PercepcionAprendizaje" },
-    { id: 12, text: "Me gusta intentar varias veces cuando algo no resulta", inverted: false, dimension: "PercepcionAprendizaje" },
-    { id: 13, text: "Algo que me gusta hacer es ayudar a otras personas cuando lo necesitan", inverted: false, dimension: "PercepcionAprendizaje" },
-    { id: 14, text: "Siento que las cosas que me propongo me resultan bien gracias a mis capacidades", inverted: false, dimension: "PercepcionAprendizaje" },
-    { id: 15, text: "Cuando tengo un problema soy capaz de ver más de una solución", inverted: false, dimension: "PercepcionAprendizaje" },
-    { id: 16, text: "Cuando hago algo incorrecto me hago responsable de las consecuencias", inverted: false, dimension: "PercepcionAprendizaje" },
-    { id: 17, text: "Creo que soy una persona valiosa", inverted: false, dimension: "PercepcionAprendizaje" },
-    { id: 18, text: "Suelo sentirme feliz", inverted: false, dimension: "InteraccionSocial" },
-    { id: 19, text: "Tengo problemas para relacionarme con las personas de mi edad", inverted: true, dimension: "InteraccionSocial" },
-    { id: 20, text: "Mis compañeros me consideran como una persona a la que es importante invitar", inverted: false, dimension: "InteraccionSocial" },
-    { id: 21, text: "Me gusta participar en actividades como fiestas y reuniones con amigos", inverted: false, dimension: "InteraccionSocial" },
-    { id: 22, text: "Me considero una persona alegre", inverted: false, dimension: "InteraccionSocial" },
-    { id: 23, text: "Siento vergüenza cuando tengo que hablar con gente de mi edad", inverted: true, dimension: "InteraccionSocial" }
+    // Dimensión Intrapersonal (Aprendizaje Personal)
+    { id: 1, text: "¿Me doy cuenta cuando estoy feliz, triste o enojado(a)?", dimension: "Intrapersonal", subdimension: "Conciencia de sí" },
+    { id: 2, text: "¿Sé qué cosas me hacen sentir bien y cuáles mal?", dimension: "Intrapersonal", subdimension: "Conciencia de sí" },
+    { id: 3, text: "¿Puedo calmarme cuando estoy muy enojado(a)?", dimension: "Intrapersonal", subdimension: "Autorregulación" },
+    { id: 4, text: "¿Pienso antes de actuar cuando algo me molesta?", dimension: "Intrapersonal", subdimension: "Autorregulación" },
+    { id: 5, text: "Pienso en las consecuencias de mis actos antes de decidir", dimension: "Intrapersonal", subdimension: "Toma de decisiones" },
+    { id: 6, text: "Elijo con cuidado a mis amigos y amigas", dimension: "Intrapersonal", subdimension: "Toma de decisiones" },
+
+    // Dimensión Interpersonal (Aprendizaje Comunitario)
+    { id: 7, text: "Siento alegría cuando a los(as) demás les pasan cosas buenas", dimension: "Interpersonal", subdimension: "Empatía" },
+    { id: 8, text: "Cuando veo que se burlan de mis compañeros y compañeras, intento ayudar", dimension: "Interpersonal", subdimension: "Empatía" },
+    { id: 9, text: "Es fácil para mí trabajar con distintos compañeros y compañeras", dimension: "Interpersonal", subdimension: "Colaboración" },
+    { id: 10, text: "En el colegio nos motivan a trabajar con diferentes compañeros y compañeras", dimension: "Interpersonal", subdimension: "Colaboración" },
+
+    // Dimensión Ciudadana / Colectiva
+    { id: 11, text: "Trato con respeto a las personas que son distintas a mí", dimension: "Ciudadana", subdimension: "Inclusividad" },
+    { id: 12, text: "Me gusta compartir con personas distintas a mí", dimension: "Ciudadana", subdimension: "Inclusividad" },
+    { id: 13, text: "Acepto a los(as) demás independiente de su apariencia, país de origen, etc.", dimension: "Ciudadana", subdimension: "Inclusividad" },
+    { id: 14, text: "Ayudo a que ningún compañero o compañera se sienta solo(a) o excluido(a)", dimension: "Ciudadana", subdimension: "Inclusividad" },
+    { id: 15, text: "Dedico tiempo a ayudar a los y las demás", dimension: "Ciudadana", subdimension: "Solidaridad" },
+    { id: 16, text: "Comparto mis cosas cuando alguien las necesita", dimension: "Ciudadana", subdimension: "Solidaridad" },
+    { id: 17, text: "Escucho a las y los demás cuando tienen un problema", dimension: "Ciudadana", subdimension: "Solidaridad" },
+
+    // Gestión (Percepción del clima y apoyo)
+    { id: 18, text: "Las y los profesores se interesan por entender lo que pensamos", dimension: "Gestion", subdimension: "Apoyo" },
+    { id: 19, text: "Las y los profesores están dispuestos a escuchar cómo nos sentimos", dimension: "Gestion", subdimension: "Apoyo" },
+    { id: 20, text: "En el colegio ayudamos y somos solidarios con las personas que lo necesitan", dimension: "Gestion", subdimension: "Apoyo" },
+    { id: 21, text: "Nos enseñan lo importante que es respetar las normas y reglas del colegio", dimension: "Gestion", subdimension: "Convivencia" },
+    { id: 22, text: "En el colegio nos enseñan a solucionar nuestros problemas de forma pacífica", dimension: "Gestion", subdimension: "Convivencia" }
 ];
 
 export const socioemocionalScale = [
@@ -32,7 +38,8 @@ export const socioemocionalScale = [
 ];
 
 export const socioemocionalDimensions = {
-    GestionEmocional: "Gestión y Reconocimiento de Emociones",
-    PercepcionAprendizaje: "Percepción sobre el Proceso de Aprendizaje",
-    InteraccionSocial: "Interacción Social"
+    Intrapersonal: "Aprendizaje Personal (Intrapersonal)",
+    Interpersonal: "Aprendizaje Comunitario (Interpersonal)",
+    Ciudadana: "Aprendizaje Ciudadano (Colectivo)",
+    Gestion: "Gestión y Clima Escolar"
 };

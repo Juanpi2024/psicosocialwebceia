@@ -5,6 +5,9 @@ import './Tests.css';
 import { saveTestResult } from '../services/psychosocialService';
 import { chaeaQuestions, chaeaKey } from '../data/chaeaData';
 import { socioemocionalQuestions, socioemocionalScale, socioemocionalDimensions } from '../data/socioemocionalData';
+import { motivacionQuestions, motivacionScale } from '../data/motivacionData';
+import { autoeficaciaQuestions, autoeficaciaScale } from '../data/autoeficaciaData';
+import { climaEscolarQuestions, climaEscolarScale } from '../data/climaEscolarData';
 
 export default function PsychosocialTests({ type, onBack, studentInfo }) {
     const [currentStep, setCurrentStep] = useState(0);
@@ -94,23 +97,57 @@ export default function PsychosocialTests({ type, onBack, studentInfo }) {
     };
 
     const calculateSocioemocionalResult = (finalAnswers) => {
-        let scores = { GestionEmocional: 0, PercepcionAprendizaje: 0, InteraccionSocial: 0, Total: 0 };
+        let scores = { Intrapersonal: 0, Interpersonal: 0, Ciudadana: 0, Gestion: 0, Total: 0 };
 
         finalAnswers.forEach(ans => {
-            // For inverted questions: Nunca=4, Algunas veces=3, Casi Siempre=2, Siempre=1
-            // For normal questions: Nunca=1, Algunas veces=2, Casi Siempre=3, Siempre=4
-            let itemScore = ans.inverted ? (5 - ans.value) : ans.value;
+            let itemScore = ans.value; // Escala 1-4
 
-            if (ans.dimension === "GestionEmocional") scores.GestionEmocional += itemScore;
-            else if (ans.dimension === "PercepcionAprendizaje") scores.PercepcionAprendizaje += itemScore;
-            else if (ans.dimension === "InteraccionSocial") scores.InteraccionSocial += itemScore;
+            if (ans.dimension === "Intrapersonal") scores.Intrapersonal += itemScore;
+            else if (ans.dimension === "Interpersonal") scores.Interpersonal += itemScore;
+            else if (ans.dimension === "Ciudadana") scores.Ciudadana += itemScore;
+            else if (ans.dimension === "Gestion") scores.Gestion += itemScore;
 
             scores.Total += itemScore;
         });
 
-        let status = scores.Total > 57 ? "Adecuado" : "Requiere Apoyo";
+        // El puntaje máximo es 22*4 = 88. 
+        let status = scores.Total > 55 ? "Adecuado" : "Requiere Apoyo";
 
         return { scores, status };
+    };
+
+    // NEW TESTS LOGIC
+    const handleGenericAnswer = async (value, questions, testType) => {
+        const currentQ = questions[currentStep];
+        const newAnswers = [...answers, { id: currentQ.id, dimension: currentQ.dimension, value }];
+
+        if (currentStep < questions.length - 1) {
+            setAnswers(newAnswers);
+            setCurrentStep(currentStep + 1);
+        } else {
+            setAnswers(newAnswers);
+            setFinished(true);
+
+            let scores = {};
+            if (testType === 'motivacion') {
+                questions.forEach(q => { if (q.dimension) scores[q.dimension] = 0; });
+                newAnswers.forEach(ans => { if (ans.dimension) scores[ans.dimension] += ans.value; });
+            } else {
+                let total = 0;
+                newAnswers.forEach(ans => { total += ans.value; });
+                scores = { total };
+            }
+
+            await saveTestResult(
+                studentInfo.id,
+                studentInfo.nombre || 'Estudiante Desconocido',
+                studentInfo.curso,
+                testType,
+                scores,
+                "Completado",
+                newAnswers
+            );
+        }
     };
 
     if (loading) {
@@ -208,7 +245,7 @@ export default function PsychosocialTests({ type, onBack, studentInfo }) {
                         <>
                             <div className="test-header">
                                 <Play className="text-gradient" size={32} />
-                                <h2>Adaptación Socioemocional</h2>
+                                <h2>Adaptación Socioemocional (DIA)</h2>
                                 <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Afirmación {currentStep + 1} de {socioemocionalQuestions.length}</p>
                                 <div className="progress-bar">
                                     <div
@@ -222,7 +259,10 @@ export default function PsychosocialTests({ type, onBack, studentInfo }) {
                                 <h3 style={{ fontSize: '1.4rem', lineHeight: 1.6, minHeight: '80px', color: 'var(--text-main)' }}>
                                     "{socioemocionalQuestions[currentStep].text}"
                                 </h3>
-                                <div className="options-column" style={{ marginTop: '2rem', gap: '0.8rem' }}>
+                                <p style={{ fontSize: '0.8rem', color: 'var(--primary)', marginBottom: '1rem' }}>
+                                    Dimensión: {socioemocionalQuestions[currentStep].dimension}
+                                </p>
+                                <div className="options-column" style={{ marginTop: '1rem', gap: '0.8rem' }}>
                                     {socioemocionalScale.map((opt, i) => (
                                         <button key={i} className="opt-btn story-opt" style={{ textAlign: 'left', padding: '1rem', background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.1)' }} onClick={() => handleSocioemocionalAnswer(opt.value)}>
                                             {opt.label}
@@ -237,6 +277,47 @@ export default function PsychosocialTests({ type, onBack, studentInfo }) {
                             <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>¡Cuestionario Completado!</h2>
                             <p style={{ fontSize: '1.2rem', marginBottom: '1rem', color: 'var(--text-muted)' }}>Gracias por responder con honestidad.</p>
                             <p style={{ marginTop: '1rem' }}>Tus resultados han sido enviados a tu profesor para apoyarte en tu desarrollo educativo y socioemocional.</p>
+                            <button className="btn btn-primary" style={{ padding: '1rem 3rem', fontSize: '1.1rem', marginTop: '2rem' }} onClick={onBack}>Finalizar y Volver</button>
+                        </div>
+                    )}
+                </div>
+            ) : type === 'motivacion' || type === 'autoeficacia' || type === 'clima' ? (
+                <div className="test-content">
+                    {!finished ? (
+                        <>
+                            <div className="test-header">
+                                <Play className="text-gradient" size={32} />
+                                <h2>{type === 'motivacion' ? 'Escala de Motivación (EME-S)' : type === 'autoeficacia' ? 'Autoeficacia Académica' : 'Clima y Seguridad (EPJA)'}</h2>
+                                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                                    Ítem {currentStep + 1} de {type === 'motivacion' ? motivacionQuestions.length : type === 'autoeficacia' ? autoeficaciaQuestions.length : climaEscolarQuestions.length}
+                                </p>
+                                <div className="progress-bar">
+                                    <div
+                                        className="progress-fill"
+                                        style={{ width: `${((currentStep) / (type === 'motivacion' ? motivacionQuestions.length : type === 'autoeficacia' ? autoeficaciaQuestions.length : climaEscolarQuestions.length)) * 100}%` }}
+                                    ></div>
+                                </div>
+                            </div>
+
+                            <div className="question-section" style={{ marginTop: '2rem' }}>
+                                <h3 style={{ fontSize: '1.4rem', lineHeight: 1.6, minHeight: '80px', color: 'var(--text-main)' }}>
+                                    "{type === 'motivacion' ? motivacionQuestions[currentStep].text : type === 'autoeficacia' ? autoeficaciaQuestions[currentStep].text : climaEscolarQuestions[currentStep].text}"
+                                </h3>
+                                <div className="options-column" style={{ marginTop: '2rem', gap: '0.8rem' }}>
+                                    {(type === 'motivacion' ? motivacionScale : type === 'autoeficacia' ? autoeficaciaScale : climaEscolarScale).map((opt, i) => (
+                                        <button key={i} className="opt-btn story-opt" style={{ textAlign: 'left', padding: '1rem', background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.1)' }} 
+                                            onClick={() => handleGenericAnswer(opt.value, (type === 'motivacion' ? motivacionQuestions : type === 'autoeficacia' ? autoeficaciaQuestions : climaEscolarQuestions), type)}>
+                                            {opt.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="result-section">
+                            <CheckCircle size={64} color="var(--secondary)" />
+                            <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>¡Evaluación Completada!</h2>
+                            <p style={{ fontSize: '1.2rem', marginBottom: '1rem', color: 'var(--text-muted)' }}>Tus respuestas han sido registradas exitosamente.</p>
                             <button className="btn btn-primary" style={{ padding: '1rem 3rem', fontSize: '1.1rem', marginTop: '2rem' }} onClick={onBack}>Finalizar y Volver</button>
                         </div>
                     )}

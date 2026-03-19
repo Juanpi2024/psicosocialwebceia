@@ -149,16 +149,31 @@ export default function DashboardEstudiante() {
                         </div>
                         <p className="card-desc">Completa estos instrumentos para que tus clases se adapten a tu forma de ser.</p>
 
-                        <div className="grid-layout" style={{ gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1rem' }}>
-                            <div className="test-promo glass-panel" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)' }}>
-                                <h4>Cuestionario CHAEA</h4>
-                                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0.5rem 0' }}>Estilos de aprendizaje: Activo, Reflexivo, Teórico, Pragmático.</p>
-                                <button className="btn btn-secondary" onClick={() => handleStartTestSequence('chaea')}>Iniciar Test</button>
+                        <div className="grid-layout" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
+                            <div className="test-promo glass-panel" style={{ padding: '1.2rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)' }}>
+                                <h4 style={{ fontSize: '1rem', marginBottom: '0.4rem' }}>Cuestionario CHAEA</h4>
+                                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '0.5rem 0', minHeight: '3rem' }}>Estilos de aprendizaje: Activo, Reflexivo, Teórico, Pragmático.</p>
+                                <button className="btn btn-secondary" style={{ width: '100%', fontSize: '0.85rem' }} onClick={() => handleStartTestSequence('chaea')}>Iniciar Test</button>
                             </div>
-                            <div className="test-promo glass-panel" style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.02)' }}>
-                                <h4>Adaptación Socioemocional</h4>
-                                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0.5rem 0' }}>Diagnóstico DIA: Área Emocional, Aprendizaje e Interacción Social.</p>
-                                <button className="btn btn-secondary" onClick={() => handleStartTestSequence('socioemocional')}>Iniciar Test</button>
+                            <div className="test-promo glass-panel" style={{ padding: '1.2rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)' }}>
+                                <h4 style={{ fontSize: '1rem', marginBottom: '0.4rem' }}>Adaptación Socioemocional</h4>
+                                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '0.5rem 0', minHeight: '3rem' }}>Diagnóstico DIA: Área Personal, Comunitaria y Ciudadana.</p>
+                                <button className="btn btn-secondary" style={{ width: '100%', fontSize: '0.85rem' }} onClick={() => handleStartTestSequence('socioemocional')}>Iniciar Test</button>
+                            </div>
+                            <div className="test-promo glass-panel" style={{ padding: '1.2rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)' }}>
+                                <h4 style={{ fontSize: '1rem', marginBottom: '0.4rem' }}>Motivación Educativa</h4>
+                                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '0.5rem 0', minHeight: '3rem' }}>Escala EME-S: Mide niveles de motivación intrínseca y extrínseca.</p>
+                                <button className="btn btn-secondary" style={{ width: '100%', fontSize: '0.85rem' }} onClick={() => handleStartTestSequence('motivacion')}>Iniciar Test</button>
+                            </div>
+                            <div className="test-promo glass-panel" style={{ padding: '1.2rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)' }}>
+                                <h4 style={{ fontSize: '1rem', marginBottom: '0.4rem' }}>Autoeficacia Académica</h4>
+                                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '0.5rem 0', minHeight: '3rem' }}>Escala EAPESA: Percepción de capacidad y competencia académica.</p>
+                                <button className="btn btn-secondary" style={{ width: '100%', fontSize: '0.85rem' }} onClick={() => handleStartTestSequence('autoeficacia')}>Iniciar Test</button>
+                            </div>
+                            <div className="test-promo glass-panel" style={{ padding: '1.2rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)' }}>
+                                <h4 style={{ fontSize: '1rem', marginBottom: '0.4rem' }}>Clima y Seguridad (EPJA)</h4>
+                                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '0.5rem 0', minHeight: '3rem' }}>Escala EPCSE: Percepción de respeto y seguridad nocturna.</p>
+                                <button className="btn btn-secondary" style={{ width: '100%', fontSize: '0.85rem' }} onClick={() => handleStartTestSequence('clima')}>Iniciar Test</button>
                             </div>
                         </div>
                     </section>
