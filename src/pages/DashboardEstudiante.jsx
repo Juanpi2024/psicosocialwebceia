@@ -39,8 +39,10 @@ export default function DashboardEstudiante() {
     const fetchProgress = async (rut) => {
         try {
             const results = await getTestResults();
-            const studentResults = results.filter(r => r.studentId === rut);
-            const uniqueCompleted = [...new Set(studentResults.map(r => r.testId))];
+            if (!results || !Array.isArray(results)) return;
+            
+            const studentResults = results.filter(r => r?.studentId === rut);
+            const uniqueCompleted = [...new Set(studentResults.map(r => r?.testId).filter(Boolean))];
             setCompletedTests(uniqueCompleted);
         } catch (error) {
             console.error("Error fetching progress:", error);

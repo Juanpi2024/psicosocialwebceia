@@ -13,6 +13,33 @@ import DashboardProfesor from './pages/DashboardProfesor';
 import PortalFamilias from './pages/PortalFamilias';
 import LandingPage from './pages/LandingPage';
 
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, errorInfo) {
+    console.error("Error capturado por ErrorBoundary:", error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: '4rem', textAlign: 'center', background: '#030712', color: 'white', minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '2rem' }}>
+          <ShieldCheck size={80} color="#ef4444" />
+          <h1 style={{ fontSize: '2.5rem' }}>Ups, algo salió volando por la borda 🚀</h1>
+          <p style={{ opacity: 0.7, maxWidth: '600px' }}>Hemos detectado un error en este portal. No te preocupes, el equipo técnico ya está al tanto. Prueba recargar la página.</p>
+          <button onClick={() => window.location.reload()} className="btn btn-primary">Recargar Aplicación</button>
+          <pre style={{ marginTop: '2rem', padding: '1rem', background: 'rgba(255,0,0,0.1)', borderRadius: '12px', fontSize: '0.8rem', color: '#ef4444' }}>{this.state.error?.toString()}</pre>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 const Layout = ({ children, setShowCredits }) => (
   <>
     <nav className="navbar">
@@ -88,13 +115,15 @@ function App() {
   return (
     <Router>
       <div className="app-container">
-        <Routes>
-          <Route path="/video-presentacion" element={<VideoPlayerPage />} />
-          <Route path="/" element={<Layout setShowCredits={setShowCredits}><LandingPage /></Layout>} />
-          <Route path="/estudiante" element={<Layout setShowCredits={setShowCredits}><DashboardEstudiante /></Layout>} />
-          <Route path="/profesor" element={<Layout setShowCredits={setShowCredits}><DashboardProfesor /></Layout>} />
-          <Route path="/familia" element={<Layout setShowCredits={setShowCredits}><PortalFamilias /></Layout>} />
-        </Routes>
+        <ErrorBoundary>
+          <Routes>
+            <Route path="/video-presentacion" element={<VideoPlayerPage />} />
+            <Route path="/" element={<Layout setShowCredits={setShowCredits}><LandingPage /></Layout>} />
+            <Route path="/estudiante" element={<Layout setShowCredits={setShowCredits}><DashboardEstudiante /></Layout>} />
+            <Route path="/profesor" element={<Layout setShowCredits={setShowCredits}><DashboardProfesor /></Layout>} />
+            <Route path="/familia" element={<Layout setShowCredits={setShowCredits}><PortalFamilias /></Layout>} />
+          </Routes>
+        </ErrorBoundary>
 
         <AnimatePresence>
           {showCredits && (

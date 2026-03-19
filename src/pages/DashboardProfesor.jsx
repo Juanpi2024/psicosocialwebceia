@@ -61,21 +61,21 @@ export default function DashboardProfesor() {
         );
     }
 
-    const courses = ['Todos', ...new Set(results.map(r => r.curso || 'Sin especificar'))];
-    const filteredResults = selectedCourse === 'Todos' ? results : results.filter(r => r.curso === selectedCourse);
+    const courses = ['Todos', ...new Set((results || []).map(r => r?.curso || 'Sin especificar'))];
+    const filteredResults = selectedCourse === 'Todos' ? (results || []) : (results || []).filter(r => r?.curso === selectedCourse);
 
-    const chaeaResults = filteredResults.filter(r => r.testId === 'chaea');
-    const socioResults = filteredResults.filter(r => r.testId === 'socioemocional');
-    const motivacionResults = filteredResults.filter(r => r.testId === 'motivacion');
+    const chaeaResults = (filteredResults || []).filter(r => r?.testId === 'chaea');
+    const socioResults = (filteredResults || []).filter(r => r?.testId === 'socioemocional');
+    const motivacionResults = (filteredResults || []).filter(r => r?.testId === 'motivacion');
 
     // Agrupar resultados por estudiante
-    const groupedStudents = filteredResults.reduce((acc, current) => {
-        const studentId = current.studentId || 'unknown';
+    const groupedStudents = (filteredResults || []).reduce((acc, current) => {
+        const studentId = current?.studentId || 'unknown';
         if (!acc[studentId]) {
             acc[studentId] = {
-                studentId: current.studentId,
-                studentName: current.studentName,
-                curso: current.curso || 'Sin especificar',
+                studentId: studentId,
+                studentName: current?.studentName || 'Estudiante sin nombre',
+                curso: current?.curso || 'Sin especificar',
                 tests: []
             };
         }
@@ -152,14 +152,14 @@ export default function DashboardProfesor() {
 
     const requiresSupport = socioResults.filter(r => r.profile === 'Requiere Apoyo');
     
-    const allCriticalAlerts = filteredResults.filter(r => 
-        r.profile?.includes('Requiere Apoyo') || 
-        r.profile?.includes('Bajo') || 
-        r.profile?.includes('Crítica') ||
-        (r.testId === 'socioemocional' && r.profile === 'Requiere Apoyo')
+    const allCriticalAlerts = (filteredResults || []).filter(r => 
+        r?.profile?.includes('Requiere Apoyo') || 
+        r?.profile?.includes('Bajo') || 
+        r?.profile?.includes('Crítica') ||
+        (r?.testId === 'socioemocional' && r?.profile === 'Requiere Apoyo')
     ).map(r => ({
         ...r,
-        studentData: groupedStudents[r.studentId]
+        studentData: groupedStudents[r?.studentId || 'unknown']
     }));
 
     return (
@@ -298,13 +298,13 @@ export default function DashboardProfesor() {
                                         {studentsList.map(s => (
                                             <div key={s.studentId} onClick={() => setSelectedStudent(s)} className="student-row" style={{ padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                                    <div style={{ width: '35px', height: '35px', borderRadius: '50%', background: 'var(--gradient-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>{s.studentName.charAt(0)}</div>
+                                                    <div style={{ width: '35px', height: '35px', borderRadius: '50%', background: 'var(--gradient-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>{(s?.studentName || 'E').charAt(0)}</div>
                                                     <div>
-                                                        <div style={{ fontWeight: 'bold' }}>{s.studentName}</div>
-                                                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{s.curso}</div>
+                                                        <div style={{ fontWeight: 'bold' }}>{s?.studentName || 'Estudiante'}</div>
+                                                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{s?.curso || 'Sin curso'}</div>
                                                     </div>
                                                 </div>
-                                                <div style={{ color: 'var(--primary)', fontWeight: 'bold' }}>{s.tests.length} Tests</div>
+                                                <div style={{ color: 'var(--primary)', fontWeight: 'bold' }}>{(s?.tests || []).length} Tests</div>
                                             </div>
                                         ))}
                                     </div>
@@ -358,10 +358,10 @@ export default function DashboardProfesor() {
                             <button onClick={() => setSelectedStudent(null)} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', color: 'white' }}><X size={24} /></button>
                             
                             <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', marginBottom: '3rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '2rem' }}>
-                                <div style={{ width: '100px', height: '100px', borderRadius: '50%', background: 'var(--gradient-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', fontWeight: 'bold' }}>{selectedStudent.studentName.charAt(0)}</div>
+                                <div style={{ width: '100px', height: '100px', borderRadius: '50%', background: 'var(--gradient-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', fontWeight: 'bold' }}>{(selectedStudent?.studentName || 'E').charAt(0)}</div>
                                 <div>
-                                    <h2 style={{ fontSize: '2.5rem' }}>{selectedStudent.studentName}</h2>
-                                    <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>{selectedStudent.curso} | RUT: {selectedStudent.studentId}</p>
+                                    <h2 style={{ fontSize: '2.5rem' }}>{selectedStudent?.studentName || 'Estudiante'}</h2>
+                                    <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>{selectedStudent?.curso || 'Sin curso'} | RUT: {selectedStudent?.studentId || 'Desconocido'}</p>
                                 </div>
                             </div>
 
