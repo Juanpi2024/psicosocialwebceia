@@ -8,7 +8,7 @@ import {
   random,
   Audio
 } from 'remotion';
-import { Rocket, Code2, Cpu, Sparkles, HeartPulse } from 'lucide-react';
+import { Rocket, Code2, Sparkles, HeartPulse } from 'lucide-react';
 
 const GalaxyBackground = () => {
     const frame = useCurrentFrame();
@@ -119,7 +119,7 @@ export const VideoPitchComposition = () => {
                     title="+$77.000.000" 
                     subtitle="GESTIÓN FINANCIERA" 
                     info="Adjudicación y ejecución de proyectos impecables sin observaciones fiscales."
-                    icon={Cpu}
+                    icon={Sparkles}
                     color="255, 0, 127"
                 />
             </Sequence>

@@ -205,7 +205,7 @@ export default function DashboardProfesor() {
                                 Alertas {allCriticalAlerts.length > 0 && <span style={{ marginLeft: '0.5rem', background: 'white', color: '#ef4444', padding: '0.1rem 0.4rem', borderRadius: '50%', fontSize: '0.7rem' }}>{allCriticalAlerts.length}</span>}
                             </button>
                         </div>
-                        <button onClick={() => setShowAiConfig(!showAiConfig)} className="btn btn-secondary" style={{ borderRadius: '50%', width: '45px', height: '45px', padding: 0, background: userApiKey ? 'rgba(168, 85, 247, 0.2)' : 'rgba(255,255,255,0.05)' }}><Cpu size={20} color={userApiKey ? '#a855f7' : 'white'} /></button>
+                        <button onClick={() => setShowAiConfig(!showAiConfig)} className="btn btn-secondary" style={{ borderRadius: '50%', width: '45px', height: '45px', padding: 0, background: userApiKey ? 'rgba(168, 85, 247, 0.2)' : 'rgba(255,255,255,0.05)' }}><Sparkles size={20} color={userApiKey ? '#a855f7' : 'white'} /></button>
                         <button onClick={() => setShowHelp(true)} className="btn btn-secondary" style={{ borderRadius: '50%', width: '45px', height: '45px', padding: 0 }}><BookOpen size={20} /></button>
                     </div>
                 </div>
