@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldAlert, BarChart3, Users, Award, FileText, Loader2, BookOpen, BrainCircuit, X, AlertTriangle, Lightbulb } from 'lucide-react';
+import { ShieldAlert, BarChart3, Users, Award, FileText, Loader2, BookOpen, BrainCircuit, X, AlertTriangle, Lightbulb, Sparkles } from 'lucide-react';
 import {
     Chart as ChartJS,
     RadialLinearScale,
