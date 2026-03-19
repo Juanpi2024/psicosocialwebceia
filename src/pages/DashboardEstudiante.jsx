@@ -25,7 +25,10 @@ export default function DashboardEstudiante() {
     useEffect(() => {
         const userData = localStorage.getItem('user');
         if (!userData) {
-            navigate('/login');
+            const guestUser = { name: 'Invitado CEIA', rut: '12.345.678-K' };
+            setUser(guestUser);
+            fetchProgress(guestUser.rut);
+            setLoading(false);
             return;
         }
         const parsedUser = JSON.parse(userData);

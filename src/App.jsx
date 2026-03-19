@@ -104,7 +104,7 @@ function App() {
   const [showCredits, setShowCredits] = useState(false);
 
   return (
-    <Router basename="/psicosocialwebceia">
+    <Router>
       <div className="app-container">
         <Routes>
           {/* RUTA DE VIDEO PRIORITARIA */}

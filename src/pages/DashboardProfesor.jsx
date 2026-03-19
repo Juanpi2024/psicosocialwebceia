@@ -34,6 +34,8 @@ export default function DashboardProfesor() {
     const [activeTab, setActiveTab] = useState('overview'); // 'overview' o 'alerts'
     const [aiAnalysis, setAiAnalysis] = useState(null);
     const [aiLoading, setAiLoading] = useState(false);
+    const [userApiKey, setUserApiKey] = useState(localStorage.getItem('openai_key') || '');
+    const [showAiConfig, setShowAiConfig] = useState(false);
 
     const fetchResults = async () => {
         try {
@@ -173,7 +175,7 @@ export default function DashboardProfesor() {
                         <button 
                             onClick={async () => {
                                 setAiLoading(true);
-                                const report = await analyzePsychosocialData(filteredResults, selectedCourse);
+                                const report = await analyzePsychosocialData(filteredResults, selectedCourse, userApiKey);
                                 setAiAnalysis(report);
                                 setAiLoading(false);
                             }}
@@ -203,9 +205,33 @@ export default function DashboardProfesor() {
                                 Alertas {allCriticalAlerts.length > 0 && <span style={{ marginLeft: '0.5rem', background: 'white', color: '#ef4444', padding: '0.1rem 0.4rem', borderRadius: '50%', fontSize: '0.7rem' }}>{allCriticalAlerts.length}</span>}
                             </button>
                         </div>
+                        <button onClick={() => setShowAiConfig(!showAiConfig)} className="btn btn-secondary" style={{ borderRadius: '50%', width: '45px', height: '45px', padding: 0, background: userApiKey ? 'rgba(168, 85, 247, 0.2)' : 'rgba(255,255,255,0.05)' }}><Cpu size={20} color={userApiKey ? '#a855f7' : 'white'} /></button>
                         <button onClick={() => setShowHelp(true)} className="btn btn-secondary" style={{ borderRadius: '50%', width: '45px', height: '45px', padding: 0 }}><BookOpen size={20} /></button>
                     </div>
                 </div>
+
+                <AnimatePresence>
+                    {showAiConfig && (
+                        <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} style={{ overflow: 'hidden', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', padding: '1rem', border: '1.5px solid #a855f7', marginBottom: '1rem' }}>
+                            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                <div style={{ flex: 1 }}>
+                                    <label style={{ fontSize: '0.8rem', opacity: 0.6, display: 'block', marginBottom: '0.4rem' }}>API Key OpenAI (Sesión):</label>
+                                    <input 
+                                        type="password" 
+                                        value={userApiKey} 
+                                        onChange={(e) => {
+                                            setUserApiKey(e.target.value);
+                                            localStorage.setItem('openai_key', e.target.value);
+                                        }}
+                                        placeholder="sk-proj-..." 
+                                        style={{ width: '100%', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', padding: '0.5rem', borderRadius: '8px' }}
+                                    />
+                                </div>
+                                <button onClick={() => setShowAiConfig(false)} className="btn btn-secondary" style={{ alignSelf: 'flex-end', padding: '0.5rem 1rem' }}>Cerrar</button>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
                 <div className="kpi-row" style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
                     <div className="glass-panel kpi-card">
