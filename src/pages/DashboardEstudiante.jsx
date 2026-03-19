@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
-import { Compass, Sparkles, Smile, Frown, ShieldAlert, Award, ChevronRight, BookOpen, BrainCircuit } from 'lucide-react';
+import { Compass, Smile, Frown, ShieldAlert, BookOpen, BrainCircuit, Sparkles, Award, ChevronRight } from 'lucide-react';
 import PsychosocialTests from '../components/PsychosocialTests';
+import { getTestResults } from '../services/psychosocialService';
 import './DashboardEstudiante.css';
 
 const emotions = [
@@ -11,10 +13,7 @@ const emotions = [
     { id: 'ansiedad', label: 'Ansiedad', color: '#8B5CF6', icon: ShieldAlert },
 ];
 
-const badges = [
-    { id: 'resilience', title: 'Caballero Mindful', desc: 'Recuperación tras un error', icon: Award, color: '#F43F5E' },
-    { id: 'helper', title: 'Apoyo Empático', desc: 'Ayudaste a un compañero', icon: Sparkles, color: '#10B981' },
-];
+
 
 export default function DashboardEstudiante() {
     const [selectedEmotion, setSelectedEmotion] = useState(null);
@@ -23,6 +22,7 @@ export default function DashboardEstudiante() {
     // Estado para recolectar información del alumno
     const [studentInfo, setStudentInfo] = useState({ id: '', nombre: '', curso: '' });
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [completedTests, setCompletedTests] = useState([]);
 
     const handleStartTestSequence = (testId) => {
         setCurrentTest(testId);
@@ -32,6 +32,19 @@ export default function DashboardEstudiante() {
         e.preventDefault();
         if (studentInfo.id && studentInfo.nombre && studentInfo.curso) {
             setIsAuthenticated(true);
+            fetchProgress(studentInfo.id);
+        }
+    };
+
+    const fetchProgress = async (studentId) => {
+        try {
+            const results = await getTestResults();
+            const studentResults = results.filter(r => r.studentId === studentId);
+            const uniqueCompleted = [...new Set(studentResults.map(r => r.testId))];
+            setCompletedTests(uniqueCompleted);
+        } catch (error) {
+            console.error("Error fetching progress:", error);
+        } finally {
         }
     };
 
@@ -83,15 +96,25 @@ export default function DashboardEstudiante() {
 
                 <div className="stats-glass">
                     <div className="stat">
-                        <span className="stat-val text-gradient">Nivel 4</span>
-                        <span className="stat-label">Resiliencia</span>
+                        <span className="stat-val text-gradient">
+                            {Math.round((completedTests.length / 6) * 100)}%
+                        </span>
+                        <span className="stat-label">Progreso Total</span>
                     </div>
                     <div className="stat">
-                        <span className="stat-val text-gradient">2 / {6}</span>
-                        <span className="stat-label">Tests Completados</span>
+                        <span className="stat-val text-gradient">{completedTests.length} / 6</span>
+                        <span className="stat-label">Completados</span>
                     </div>
                 </div>
             </header>
+
+            <div className="progress-bar-container" style={{ margin: '-1.5rem 0 2rem 0', background: 'rgba(255,255,255,0.05)', height: '8px', borderRadius: '4px', overflow: 'hidden' }}>
+                <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${(completedTests.length / 6) * 100}%` }}
+                    style={{ height: '100%', background: 'var(--gradient-primary)', boxShadow: '0 0 15px var(--primary-glow)' }}
+                />
+            </div>
 
             <div className="grid-layout">
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
@@ -149,73 +172,47 @@ export default function DashboardEstudiante() {
                         </div>
                         <p className="card-desc" style={{ marginBottom: '1.5rem' }}>Completa estos instrumentos para que tus clases se adapten a tu forma de ser.</p>
 
-                        <div className="grid-layout" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-                            <div className="test-promo glass-panel" style={{ padding: '1.2rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)' }}>
-                                <h4 style={{ fontSize: '1rem', marginBottom: '0.4rem' }}>Estilos de Aprendizaje</h4>
-                                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '0.5rem 0', minHeight: '3rem' }}>Modelo VAK y CHAEA: Visual, Auditivo o Kinestésico.</p>
-                                <button className="btn btn-secondary" style={{ width: '100%', fontSize: '0.85rem' }} onClick={() => handleStartTestSequence('chaea')}>Iniciar Test</button>
-                            </div>
-                            <div className="test-promo glass-panel" style={{ padding: '1.2rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)' }}>
-                                <h4 style={{ fontSize: '1rem', marginBottom: '0.4rem' }}>Resiliencia (SV-RES)</h4>
-                                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '0.5rem 0', minHeight: '3rem' }}>Evaluación de adaptación y ajuste socioemocional (DIA/SV-RES).</p>
-                                <button className="btn btn-secondary" style={{ width: '100%', fontSize: '0.85rem' }} onClick={() => handleStartTestSequence('socioemocional')}>Iniciar Test</button>
-                            </div>
-                            <div className="test-promo glass-panel" style={{ padding: '1.2rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)' }}>
-                                <h4 style={{ fontSize: '1rem', marginBottom: '0.4rem' }}>Motivación Educativa</h4>
-                                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '0.5rem 0', minHeight: '3rem' }}>Escala EME-S: Mide niveles de motivación intrínseca y extrínseca.</p>
-                                <button className="btn btn-secondary" style={{ width: '100%', fontSize: '0.85rem' }} onClick={() => handleStartTestSequence('motivacion')}>Iniciar Test</button>
-                            </div>
-                            <div className="test-promo glass-panel" style={{ padding: '1.2rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)' }}>
-                                <h4 style={{ fontSize: '1rem', marginBottom: '0.4rem' }}>Autoeficacia Académica</h4>
-                                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '0.5rem 0', minHeight: '3rem' }}>Escala EAPESA: Percepción de capacidad y competencia académica.</p>
-                                <button className="btn btn-secondary" style={{ width: '100%', fontSize: '0.85rem' }} onClick={() => handleStartTestSequence('autoeficacia')}>Iniciar Test</button>
-                            </div>
-                            <div className="test-promo glass-panel" style={{ padding: '1.2rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)' }}>
-                                <h4 style={{ fontSize: '1rem', marginBottom: '0.4rem' }}>Clima y Seguridad (EPJA)</h4>
-                                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '0.5rem 0', minHeight: '3rem' }}>Escala EPCSE: Percepción de respeto y seguridad nocturna.</p>
-                                <button className="btn btn-secondary" style={{ width: '100%', fontSize: '0.85rem' }} onClick={() => handleStartTestSequence('clima')}>Iniciar Test</button>
-                            </div>
+                        <div className="tests-container-grid">
+                            {[
+                                { id: 'chaea', title: 'Estilos de Aprendizaje', desc: 'Modelo VAK y CHAEA: Visual, Auditivo o Kinestésico.', icon: Sparkles, type: 'secondary' },
+                                { id: 'socioemocional', title: 'Resiliencia (SV-RES)', desc: 'Evaluación de adaptación y ajuste socioemocional (DIA).', icon: ShieldAlert, type: 'secondary' },
+                                { id: 'motivacion', title: 'Motivación Educativa', desc: 'Escala EME-S: Mide niveles de motivación intrínseca y extrínseca.', icon: Compass, type: 'secondary' },
+                                { id: 'autoeficacia', title: 'Autoeficacia Académica', desc: 'Escala EAPESA: Percepción de capacidad y competencia.', icon: BrainCircuit, type: 'secondary' },
+                                { id: 'clima', title: 'Clima y Seguridad', desc: 'Escala EPCSE: Percepción de respeto y seguridad nocturna.', icon: Award, type: 'secondary' },
+                                { id: 'dcsej', title: 'Test Situacional', desc: '"El desafío grupal": Historia interactiva para medir asertividad.', icon: ChevronRight, type: 'primary' }
+                            ].map((test, index) => {
+                                const Icon = test.icon;
+                                return (
+                                    <motion.div
+                                        key={test.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: index * 0.1 }}
+                                        className={`test-card-item glass-panel ${test.id === 'dcsej' ? 'highlighted' : ''}`}
+                                    >
+                                        <div className="test-card-content">
+                                            <div className="test-card-header">
+                                                <h4>{test.title}</h4>
+                                                <Icon size={20} className={test.id === 'dcsej' ? 'primary-icon' : 'muted-icon'} />
+                                            </div>
+                                            <p>{test.desc}</p>
+                                        </div>
+                                        <button 
+                                            className={`btn btn-${test.id === 'dcsej' ? 'primary' : (completedTests.includes(test.id) ? 'outline' : 'secondary')}`}
+                                            onClick={() => handleStartTestSequence(test.id)}
+                                            style={{ opacity: completedTests.includes(test.id) ? 0.7 : 1 }}
+                                        >
+                                            {completedTests.includes(test.id) ? 'Repetir Test' : (test.id === 'dcsej' ? 'Empezar Historia' : 'Iniciar Test')}
+                                        </button>
+                                    </motion.div>
+                                );
+                            })}
                         </div>
                     </section>
 
                 </div>
 
-                <div className="desktop-sidebar">
-                    <section className="glass-panel module-card situational-test-preview">
-                         <div className="card-header">
-                            <h3>Test Situacional (Diagnóstico)</h3>
-                        </div>
-                        <div className="story-snippet" style={{ borderLeftColor: 'var(--primary)' }}>
-                            <h4>"El desafío grupal"</h4>
-                            <p>Una historia interactiva para medir tu asertividad ante un conflicto escolar.</p>
-                        </div>
-                        <button 
-                            className="btn btn-primary" 
-                            style={{ marginTop: '1.5rem', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
-                            onClick={() => handleStartTestSequence('dcsej')}
-                        >
-                            Empezar Historia <ChevronRight size={18} />
-                        </button>
-                    </section>
 
-                    <section className="glass-panel module-card badges-card">
-                        <h3>Praise Badges <Award size={18} style={{ color: 'var(--accent)', marginLeft: '8px' }} /></h3>
-                        <p className="card-desc">Reconocimientos de tus profesores</p>
-                        <div className="badges-list">
-                            {badges.map(b => (
-                                <div key={b.id} className="badge-item">
-                                    <div className="badge-icon" style={{ background: `${b.color}20`, color: b.color }}>
-                                        <b.icon size={20} />
-                                    </div>
-                                    <div className="badge-info">
-                                        <h4>{b.title}</h4>
-                                        <p>{b.desc}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </section>
-                </div>
             </div>
         </motion.div>
     );

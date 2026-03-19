@@ -10,7 +10,7 @@ import LandingPage from './pages/LandingPage';
 
 function App() {
   return (
-    <Router>
+    <Router basename="/psicosocialwebceia">
       <div className="app-container">
         <nav className="navbar">
           <div className="nav-brand">

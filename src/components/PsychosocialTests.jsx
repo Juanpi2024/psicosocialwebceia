@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import { BookOpen, CheckCircle, ChevronLeft, Play, Loader2, Sparkles } from 'lucide-react';
 import './Tests.css';
 import { saveTestResult, getDCSEJSituations } from '../services/psychosocialService';
 import { chaeaQuestions, chaeaKey } from '../data/chaeaData';
-import { socioemocionalQuestions, socioemocionalScale, socioemocionalDimensions } from '../data/socioemocionalData';
+import { socioemocionalQuestions, socioemocionalScale } from '../data/socioemocionalData';
 import { motivacionQuestions, motivacionScale } from '../data/motivacionData';
 import { autoeficaciaQuestions, autoeficaciaScale } from '../data/autoeficaciaData';
 import { climaEscolarQuestions, climaEscolarScale } from '../data/climaEscolarData';
@@ -14,6 +15,9 @@ export default function PsychosocialTests({ type, onBack, studentInfo }) {
     const [situations, setSituations] = useState([]);
     const [selectedOption, setSelectedOption] = useState(null);
     const [scoreDCSEJ, setScoreDCSEJ] = useState(0);
+    const [answers, setAnswers] = useState([]);
+    const [finished, setFinished] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (type === 'dcsej') {
