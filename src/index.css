@@ -112,8 +112,8 @@ h6 {
 /* Glassmorphism System */
 .glass-panel {
   background: var(--bg-surface);
-  backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
@@ -143,8 +143,8 @@ h6 {
   top: 0;
   z-index: 50;
   background: rgba(3, 7, 18, 0.6);
-  backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
   border-bottom: 1px solid var(--border-color);
   transition: padding 0.3s ease;
 }
@@ -226,6 +226,7 @@ h6 {
   border: 1px solid transparent;
   cursor: pointer;
   transition: var(--transition);
+  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -256,6 +257,7 @@ h6 {
   background: rgba(255, 255, 255, 0.03);
   color: var(--text-main);
   border: 1px solid var(--border-color);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
 

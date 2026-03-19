@@ -12,15 +12,21 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@remotion/cli": "^4.0.436",
+    "@remotion/gif": "^4.0.436",
+    "@remotion/google-fonts": "^4.0.436",
+    "@remotion/player": "^4.0.436",
     "chart.js": "^4.5.1",
     "firebase": "^12.10.0",
     "firebase-admin": "^13.7.0",
     "framer-motion": "^12.35.2",
     "lucide-react": "^0.577.0",
+    "openai": "^6.32.0",
     "react": "^19.2.0",
     "react-chartjs-2": "^5.3.1",
     "react-dom": "^19.2.0",
-    "react-router-dom": "^7.13.1"
+    "react-router-dom": "^7.13.1",
+    "remotion": "^4.0.436"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
