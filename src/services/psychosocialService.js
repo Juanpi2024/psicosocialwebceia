@@ -26,7 +26,7 @@ const mockResults = [
 const mockDCSEJSituations = [
   {
     title: 'Conflicto en trabajo grupal',
-    context: 'Durante un trabajo en equipo, dos compañeros comienzan a discutir y el ambiente se tensa. Tú también debes participar para terminar a tiempo.',
+    context: 'Durante un trabajo en equipo, dos compañeros comienzan a discutir y el ambiente se tensa.',
     options: [
       { text: 'Ignorar la discusión y hacer tu parte en silencio.', points: 1 },
       { text: 'Proponer una pausa breve y retomar con turnos para hablar.', points: 3 },
@@ -35,50 +35,46 @@ const mockDCSEJSituations = [
   },
   {
     title: 'Crítica de un docente',
-    context: 'Un profesor corrige tu presentación frente al curso y sientes incomodidad. Aún quedan actividades por realizar.',
+    context: 'Un profesor corrige tu presentación frente al curso y sientes incomodidad.',
     options: [
       { text: 'Tomarlo personal y dejar de participar ese día.', points: 0 },
       { text: 'Pedir una aclaración al final de la clase para mejorar.', points: 3 },
       { text: 'Responder en el momento para defenderte sin escuchar.', points: 1 }
     ]
-  },
-  {
-    title: 'Compañero con señales de desánimo',
-    context: 'Notas que un compañero que antes participaba activamente ahora está aislado y evita hablar en clases.',
-    options: [
-      { text: 'No intervenir porque no es tu responsabilidad.', points: 1 },
-      { text: 'Conversar con él/ella y sugerir apoyo del equipo docente.', points: 3 },
-      { text: 'Comentar su situación con otros compañeros en recreo.', points: 0 }
-    ]
-  },
-  {
-    title: 'Presión antes de evaluación',
-    context: 'Horas antes de una prueba importante, sientes mucha ansiedad y te cuesta concentrarte.',
-    options: [
-      { text: 'Abandonar el estudio porque ya no vale la pena.', points: 0 },
-      { text: 'Aplicar respiración breve y organizar un plan de repaso.', points: 3 },
-      { text: 'Copiar un resumen sin revisar si te sirve.', points: 1 }
-    ]
   }
 ];
 
 // Función para poner un límite de tiempo a las peticiones de Firebase
-const withTimeout = (promise, ms = 3000) => {
+const withTimeout = (promise, ms = 5000) => {
   return Promise.race([
     promise,
     new Promise((_, reject) => setTimeout(() => reject(new Error('Firebase Timeout')), ms))
   ]);
 };
 
-export const saveTestResult = async (resultData) => {
+/**
+ * Guarda el resultado de un test. 
+ * Se adapta para recibir argumentos individuales o un objeto.
+ */
+export const saveTestResult = async (studentId, studentName, curso, testId, scores, profile, answers = []) => {
   try {
-    const docRef = await addDoc(collection(db, 'testResults'), {
-      ...resultData,
+    // Si el primer argumento es un objeto, lo usamos directamente (compatibilidad)
+    const dataToSave = typeof studentId === 'object' ? studentId : {
+      studentId,
+      studentName,
+      curso,
+      testId,
+      scores,
+      profile,
+      answers,
       timestamp: serverTimestamp()
-    });
+    };
+
+    console.log('Guardando resultado:', dataToSave);
+    const docRef = await addDoc(collection(db, 'testResults'), dataToSave);
     return docRef.id;
   } catch (error) {
-    console.error('Error saving result:', error);
+    console.error('Error al guardar en Firebase:', error);
     return `mock-id-${Math.random()}`;
   }
 };
@@ -88,24 +84,32 @@ export const getDCSEJSituations = async () => {
 };
 
 export const getTestResults = async () => {
+  console.log('Intentando cargar resultados de Firebase...');
   try {
     const q = query(collection(db, 'testResults'), orderBy('timestamp', 'desc'));
-    // Si Firebase no responde en 3 segundos, saltamos a los datos de prueba
-    const querySnapshot = await withTimeout(getDocs(q), 3000);
+    const querySnapshot = await withTimeout(getDocs(q), 5000);
 
-    const results = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      timestamp: doc.data().timestamp?.toDate() || new Date()
-    }));
+    const results = querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      // Procesamiento seguro de la fecha
+      let timestamp = new Date();
+      if (data.timestamp && typeof data.timestamp.toDate === 'function') {
+        timestamp = data.timestamp.toDate();
+      } else if (data.timestamp instanceof Date) {
+        timestamp = data.timestamp;
+      }
 
+      return {
+        id: doc.id,
+        ...data,
+        timestamp
+      };
+    });
+
+    console.log(`Cargados ${results.length} resultados reales.`);
     return results.length > 0 ? results : mockResults;
   } catch (error) {
-    if (error.message === 'Firebase Timeout' || error.name === 'AbortError') {
-      console.warn('⚠️ Firebase lento o abortado. Activando Modo Maqueta.');
-    } else {
-      console.error('Error inesperado en Firebase:', error);
-    }
+    console.warn('Usando datos de maqueta por error en Firebase:', error.message);
     return mockResults;
   }
 };
