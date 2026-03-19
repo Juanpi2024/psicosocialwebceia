@@ -451,82 +451,104 @@ export default function DashboardProfesor() {
                                                 </div>
                                             </div>
                                         ) : test.testId === 'autoeficacia' || test.testId === 'clima' ? (
-                                            <div>
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
-                                                    <div>
-                                                        <h3 style={{ color: 'var(--primary)', fontSize: '1.4rem' }}>{test.testId === 'autoeficacia' ? 'Autoeficacia Académica (EAPESA)' : 'Clima y Seguridad (EPCSE)'}</h3>
-                                                        <p style={{ color: 'var(--text-muted)' }}>{test.testId === 'autoeficacia' ? 'Percepción de capacidad y competencia individual' : 'Percepción de respeto y seguridad en el entorno'}</p>
+                                            <div className="glass-panel" style={{ padding: '2rem', border: '1px solid rgba(255,255,255,0.1)', background: 'linear-gradient(135deg, rgba(129, 140, 248, 0.1) 0%, rgba(52, 211, 153, 0.05) 100%)' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                                        <div style={{ padding: '0.75rem', borderRadius: '12px', background: 'var(--gradient-primary)', color: 'white' }}>
+                                                            {test.testId === 'autoeficacia' ? <BrainCircuit size={24} /> : <ShieldAlert size={24} />}
+                                                        </div>
+                                                        <div>
+                                                            <h3 style={{ fontSize: '1.5rem', margin: 0 }}>{test.testId === 'autoeficacia' ? 'Autoeficacia Académica' : 'Clima y Seguridad'}</h3>
+                                                            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Instrumento EAPESA / EPCSE</p>
+                                                        </div>
                                                     </div>
-                                                    <div style={{ padding: '0.6rem 1.2rem', borderRadius: '30px', fontWeight: 'bold', background: 'rgba(99, 102, 241, 0.2)', color: '#818cf8' }}>
+                                                    <div style={{ padding: '0.6rem 1.2rem', borderRadius: '30px', fontWeight: 'bold', background: 'white', color: 'var(--bg-body)', boxShadow: '0 4px 15px rgba(255,255,255,0.2)' }}>
                                                         {test.testId === 'autoeficacia' ? (
-                                                            test.scores?.total >= 40 ? 'Autoeficacia Alta' : test.scores?.total >= 26 ? 'Autoeficacia Media' : 'Autoeficacia Baja'
+                                                            test.scores?.total >= 40 ? 'Perfil Alto' : test.scores?.total >= 26 ? 'Perfil Medio' : 'Perfil Bajo'
                                                         ) : (
-                                                            test.scores?.total >= 31 ? 'Clima Positivo' : test.scores?.total >= 21 ? 'Clima Regular' : 'Clima Crítico'
+                                                            test.scores?.total >= 31 ? 'Percepción Positiva' : test.scores?.total >= 21 ? 'Percepción Regular' : 'Percepción Crítica'
                                                         )}
                                                     </div>
                                                 </div>
                                                 
-                                                <div style={{ background: 'rgba(99, 102, 241, 0.05)', border: '1px solid rgba(99, 102, 241, 0.2)', padding: '2rem', borderRadius: '16px', textAlign: 'center', marginBottom: '2rem' }}>
-                                                    <h2 style={{ fontSize: '3.5rem', fontWeight: 800, margin: 0 }}>{test.scores?.total}</h2>
-                                                    <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>Puntos obtenidos</p>
-                                                    <div style={{ marginTop: '1rem', height: '8px', width: '100%', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', overflow: 'hidden' }}>
-                                                        <div style={{ width: `${(test.scores?.total / (test.testId === 'autoeficacia' ? 50 : 40)) * 100}%`, height: '100%', background: 'var(--primary)' }}></div>
+                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2rem', alignItems: 'center', marginBottom: '2rem' }}>
+                                                    <div style={{ textAlign: 'center', padding: '2rem', background: 'rgba(255,255,255,0.05)', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                                        <span style={{ fontSize: '1rem', color: 'var(--text-muted)', display: 'block' }}>PUNTOS</span>
+                                                        <span style={{ fontSize: '4.5rem', fontWeight: 900, color: 'white', textShadow: '0 0 20px var(--primary-glow)' }}>{test.scores?.total}</span>
+                                                    </div>
+                                                    <div>
+                                                        <div style={{ marginBottom: '1.5rem' }}>
+                                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                                                                <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Progreso de la escala</span>
+                                                                <span style={{ fontWeight: 'bold' }}>{Math.round((test.scores?.total / (test.testId === 'autoeficacia' ? 50 : 40)) * 100)}%</span>
+                                                            </div>
+                                                            <div style={{ width: '100%', height: '12px', background: 'rgba(255,255,255,0.1)', borderRadius: '6px', overflow: 'hidden', padding: '2px' }}>
+                                                                <div style={{ width: `${(test.scores?.total / (test.testId === 'autoeficacia' ? 50 : 40)) * 100}%`, height: '100%', background: 'linear-gradient(to right, var(--primary), var(--secondary))', borderRadius: '4px' }}></div>
+                                                            </div>
+                                                        </div>
+                                                        <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.5 }}>
+                                                            {test.testId === 'autoeficacia' ? 'Mide la creencia en las propias capacidades para organizar y ejecutar las acciones requeridas que producirán determinados logros.' : 'Mide la percepción de seguridad física y respeto interpersonal en el contexto de la jornada escolar nocturna.'}
+                                                        </p>
                                                     </div>
                                                 </div>
 
-                                                <div style={{ background: 'rgba(56, 189, 248, 0.05)', border: '1px solid rgba(56, 189, 248, 0.2)', padding: '1.5rem', borderRadius: '16px' }}>
-                                                    <h4 style={{ color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}><Lightbulb size={18} /> Análisis e Intervención</h4>
-                                                    <p style={{ fontSize: '0.95rem', lineHeight: 1.6, color: 'var(--text-main)' }}>
+                                                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', padding: '1.5rem', borderRadius: '20px' }}>
+                                                    <h4 style={{ color: 'var(--secondary)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}><Lightbulb size={18} /> Recomendación Pedagógica</h4>
+                                                    <p style={{ fontSize: '1rem', lineHeight: 1.6, color: 'var(--text-main)', fontStyle: 'italic' }}>
                                                         {test.testId === 'autoeficacia' ? (
                                                             test.scores?.total >= 40 ? 
-                                                            "El estudiante posee una alta confianza en sus recursos cognitivos. Se recomienda desafiarle con tareas de mayor complejidad técnica y fomentar que actúe como tutor de pares." :
+                                                            "Potenciar con desafíos de alta complejidad. El alumno posee una 'mentalidad de crecimiento' sólida." :
                                                             test.scores?.total >= 26 ?
-                                                            "Percepción de capacidad funcional. Requiere refuerzo positivo constante y el desglose de metas grandes en micro-objetivos para fortalecer su sentido de logro." :
-                                                            "Alerta de baja autoeficacia. Posible evitación de tareas por miedo al fracaso. Requiere acompañamiento estrecho y validación de sus pequeñas fortalezas iniciales."
+                                                            "Acompañar con feedback específico. Necesita confirmar sus logros paso a paso." :
+                                                            "Alerta: Riesgo de abandono por baja confianza. Requiere metas muy cortas y éxito inmediato garantizado."
                                                         ) : (
                                                             test.scores?.total >= 31 ? 
-                                                            "El estudiante percibe la escuela como un refugio seguro y de respeto. Ideal para involucrarle en brigadas de convivencia o mediación escolar nocturna." :
+                                                            "Excelente vínculo con el entorno. Fomentar su rol como tutor o mediador natural." :
                                                             test.scores?.total >= 21 ?
-                                                            "Existen focos de inseguridad menores (posiblemente accesos o ciertos pasillos). Se sugiere profundizar en entrevista qué zonas o momentos le generan mayor inquietud." :
-                                                            "Percepción de entorno hostil o inseguro. Derivación inmediata para explorar si existe acoso escolar o inseguridad física percibida que esté bloqueando su aprendizaje."
+                                                            "Situación estable, pero requiere monitoreo de los horarios de salida/entrada." :
+                                                            "Urgente: El alumno no se siente seguro. Identificar focos de conflicto o riesgos en accesos."
                                                         )}
                                                     </p>
                                                 </div>
                                             </div>
                                         ) : test.testId === 'dcsej' ? (
-                                            <div>
-                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
-                                                    <div>
-                                                        <h3 style={{ color: 'var(--primary)', fontSize: '1.4rem' }}>Test Situacional (DCSE-J): Desafío Grupal</h3>
-                                                        <p style={{ color: 'var(--text-muted)' }}>Manejo de conflictos y asertividad social</p>
+                                            <div className="glass-panel" style={{ padding: '2rem', background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(236, 72, 153, 0.05) 100%)', border: '1px solid rgba(168, 85, 247, 0.2)' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                                        <div style={{ padding: '0.75rem', borderRadius: '12px', background: 'linear-gradient(to bottom right, #a855f7, #ec4899)', color: 'white' }}>
+                                                            <Users size={24} />
+                                                        </div>
+                                                        <div>
+                                                            <h3 style={{ fontSize: '1.5rem', margin: 0 }}>Desafío Grupal (DCSE-J)</h3>
+                                                            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Test Situacional de Habilidades Sociales</p>
+                                                        </div>
                                                     </div>
-                                                    <div style={{ padding: '0.6rem 1.2rem', borderRadius: '30px', fontWeight: 'bold', background: test.profile === 'Habilidades Sociales Altas' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(244, 63, 94, 0.2)', color: test.profile === 'Habilidades Sociales Altas' ? '#10b981' : '#f43f5e' }}>
+                                                    <div style={{ padding: '0.6rem 1.2rem', borderRadius: '30px', fontWeight: 'bold', background: test.profile === 'Habilidades Sociales Altas' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(244, 63, 94, 0.2)', color: test.profile === 'Habilidades Sociales Altas' ? '#34d399' : '#fb7185', border: '1px solid currentColor' }}>
                                                         {test.profile}
                                                     </div>
                                                 </div>
                                                 
-                                                <div style={{ background: 'rgba(0,0,0,0.2)', padding: '2rem', borderRadius: '16px', marginBottom: '2rem' }}>
-                                                    <h4 style={{ marginBottom: '1rem' }}>Resumen del Perfil Conductual</h4>
-                                                    <p style={{ lineHeight: 1.6, fontSize: '1rem' }}>
-                                                        {test.profile === 'Habilidades Sociales Altas' ? 
-                                                            "El estudiante ha demostrado capacidad de mediación y una comunicación empática. Ante situaciones críticas, elige respuestas que equilibran sus necesidades con las del grupo." :
-                                                            "Se observa una tendencia a la respuesta pasiva o agresiva ante la frustración grupal. El estudiante prioriza la evitación del conflicto en lugar de su resolución asertiva."}
-                                                    </p>
-                                                    <div style={{ marginTop: '1.5rem', display: 'flex', gap: '2rem', alignItems: 'center' }}>
-                                                        <div style={{ flex: 1, height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px' }}>
-                                                            <div style={{ width: `${(test.scores?.total / 18) * 100}%`, height: '100%', background: 'var(--primary)' }}></div>
-                                                        </div>
-                                                        <span style={{ fontWeight: 'bold' }}>{test.scores?.total} / 18 pts</span>
+                                                <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
+                                                    <div style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '20px' }}>
+                                                        <h4 style={{ marginBottom: '1rem', color: 'rgba(255,255,255,0.9)' }}>Análisis de la Dinámica</h4>
+                                                        <p style={{ lineHeight: 1.7, fontSize: '1.05rem', color: 'rgba(255,255,255,0.8)' }}>
+                                                            {test.profile === 'Habilidades Sociales Altas' ? 
+                                                                "El estudiante posee un perfil mediador. Elige respuestas que maximizan el bienestar del grupo sin sacrificar sus propios objetivos, demostrando alta asertividad." :
+                                                                "Se detectan dificultades en la negociación. Tiende a respuestas reactivas o a la sumisión grupal, lo que indica necesidad de trabajar la autoconfianza social."}
+                                                        </p>
+                                                    </div>
+                                                    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', background: 'rgba(0,0,0,0.2)', borderRadius: '20px', padding: '1rem' }}>
+                                                        <span style={{ fontSize: '3rem', fontWeight: '900', color: '#a855f7' }}>{test.scores?.total}</span>
+                                                        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Puntos / 18</span>
                                                     </div>
                                                 </div>
 
-                                                <div style={{ background: 'rgba(168, 85, 247, 0.05)', border: '1px solid rgba(168, 85, 247, 0.2)', padding: '1.5rem', borderRadius: '16px' }}>
-                                                    <h4 style={{ color: '#a855f7', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}><Sparkles size={18} /> Sugerencia de Intervención Social</h4>
-                                                    <p style={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
+                                                <div style={{ background: 'rgba(56, 189, 248, 0.1)', border: '1px solid rgba(56, 189, 248, 0.2)', padding: '1.25rem', borderRadius: '16px', display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                                    <div style={{ color: '#38bdf8' }}><Sparkles size={24} /></div>
+                                                    <p style={{ fontSize: '0.95rem', margin: 0, fontWeight: '500' }}>
                                                         {test.profile === 'Habilidades Sociales Altas' ? 
-                                                            "Se sugiere otorgarle roles de liderazgo en trabajos colaborativos. Puede servir como monitor de clima escolar para resolver pequeñas disputas entre compañeros." :
-                                                            "Participación recomendada en talleres de Habilidades Sociales (HHS) enfocados en el manejo de la asertividad y la comunicación no verbal defensiva."
-                                                        }
+                                                            "Estrategia: Incluir en equipos de trabajo como líder de mediación por su capacidad comunicativa." :
+                                                            "Intervención: Se recomienda Taller de Asertividad y Role-playing para situaciones de conflicto."}
                                                     </p>
                                                 </div>
                                             </div>
