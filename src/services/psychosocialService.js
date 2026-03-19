@@ -8,10 +8,19 @@ const mockResults = [
   {
     studentId: '12.345.678-K',
     studentName: 'Juan Invitado',
-    curso: '2 Medio A',
+    curso: '2° Medio A',
     testId: 'chaea',
     scores: { ACTIVO: 12, REFLEXIVO: 15, TEORICO: 8, PRAGMATICO: 14 },
-    profile: 'Reflexivo/Pragmatico',
+    profile: 'Reflexivo/Pragmático',
+    timestamp: new Date()
+  },
+  {
+    studentId: '98.765.432-1',
+    studentName: 'Maria Alerta',
+    curso: '1° Medio B',
+    testId: 'socioemocional',
+    scores: { GestionEmocional: 4, PercepcionAprendizaje: 5, InteraccionSocial: 3 },
+    profile: 'Requiere Apoyo',
     timestamp: new Date()
   }
 ];
@@ -55,67 +64,108 @@ const mockDCSEJSituations = [
   }
 ];
 
-// Utilidades para Cache Local
+const parseDate = (value) => {
+  if (value instanceof Date) return value;
+  if (typeof value === 'string' || typeof value === 'number') {
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
+  }
+  return new Date();
+};
+
 const getLocalResults = () => {
   try {
     const raw = localStorage.getItem(LOCAL_RESULTS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch { return []; }
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.map((item) => ({
+      ...item,
+      timestamp: parseDate(item.timestamp)
+    }));
+  } catch {
+    return [];
+  }
 };
 
 const setLocalResults = (results) => {
   try {
-    localStorage.setItem(LOCAL_RESULTS_KEY, JSON.stringify(results.slice(0, 50))); // Guardamos los ultimos 50
-  } catch (e) { console.warn("Cache local llena", e); }
+    localStorage.setItem(
+      LOCAL_RESULTS_KEY,
+      JSON.stringify(
+        results.map((item) => ({
+          ...item,
+          timestamp: parseDate(item.timestamp).toISOString()
+        }))
+      )
+    );
+  } catch (error) {
+    console.warn('No se pudo persistir cache local de resultados:', error);
+  }
 };
 
+const persistLocalResult = (result) => {
+  const current = getLocalResults();
+  const next = [result, ...current.filter((item) => item.id !== result.id)];
+  setLocalResults(next);
+  return next;
+};
+
+const withTimeout = (promise, ms = 5000) => {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Firebase Timeout')), ms))
+  ]);
+};
+
+// saveTestResult adaptada para recibir los 7 argumentos actuales 
+// o un objeto segun tu nuevo parche.
 export const saveTestResult = async (studentId, studentName, curso, testId, scores, profile, answers = []) => {
-  // 1. Normalizar los datos (Soporta objeto unico o argumentos separados)
+  
+  // Normalizamos a objeto unico sea cual sea el origen
   const resultData = typeof studentId === 'object' ? studentId : {
-    studentId,
-    studentName,
-    curso,
-    testId,
-    scores,
-    profile,
-    answers,
-    timestamp: new Date().toISOString()
+     studentId, studentName, curso, testId, scores, profile, answers
   };
 
-  const fallbackId = `local-${Date.now()}`;
-  
-  // 2. Guardado preventivo en cache local
-  const currentLocal = getLocalResults();
-  setLocalResults([{ ...resultData, id: fallbackId }, ...currentLocal]);
+  const fallbackId = `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const localDraft = {
+    ...resultData,
+    id: fallbackId,
+    timestamp: new Date()
+  };
+
+  persistLocalResult(localDraft);
 
   try {
-    // 3. Intentar guardado en Firebase
     const docRef = await addDoc(collection(db, 'testResults'), {
       ...resultData,
       timestamp: serverTimestamp()
     });
-    
-    // 4. Actualizar ID en cache local si tuvo exito
-    const updatedLocal = getLocalResults().map(r => r.id === fallbackId ? { ...r, id: docRef.id } : r);
-    setLocalResults(updatedLocal);
-    
+
+    persistLocalResult({
+      ...localDraft,
+      id: docRef.id
+    });
+
     return docRef.id;
   } catch (error) {
-    console.error('Error enviando a Firebase (queda en cache local):', error);
+    console.error('Error saving result (usando cache local):', error);
     return fallbackId;
   }
 };
 
-export const getDCSEJSituations = async () => mockDCSEJSituations;
+export const getDCSEJSituations = async () => {
+  return mockDCSEJSituations;
+};
 
 export const getTestResults = async () => {
-  const localCache = getLocalResults();
-  
+  const localResults = getLocalResults();
+
   try {
     const q = query(collection(db, 'testResults'), orderBy('timestamp', 'desc'));
-    const querySnapshot = await getDocs(q);
-    
-    const cloudResults = querySnapshot.docs.map(doc => {
+    const querySnapshot = await withTimeout(getDocs(q), 5000);
+
+    const cloudResults = querySnapshot.docs.map((doc) => {
       const data = doc.data();
       let timestamp = new Date();
       if (data.timestamp?.toDate) timestamp = data.timestamp.toDate();
@@ -126,9 +176,12 @@ export const getTestResults = async () => {
       setLocalResults(cloudResults);
       return cloudResults;
     }
-    return localCache.length > 0 ? localCache : mockResults;
+
+    if (localResults.length > 0) return localResults;
+    return mockResults;
   } catch (error) {
-    console.warn('Usando cache local por fallo de red:', error.message);
-    return localCache.length > 0 ? localCache : mockResults;
+    console.warn('Usando cache local por lentitud/error:', error.message);
+    if (localResults.length > 0) return localResults;
+    return mockResults;
   }
 };
