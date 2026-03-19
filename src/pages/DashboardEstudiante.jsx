@@ -13,6 +13,18 @@ const emotions = [
     { id: 'ansiedad', label: 'Ansiedad', color: '#8B5CF6', icon: ShieldAlert },
 ];
 
+const COURSES = [
+    '7 Y 8 BASICO',
+    '1 Y 2 MEDIO HC',
+    '3 Y 4 MEDIO HC',
+    '1 Y 2 MEDIO ELECTRICO',
+    '3 MEDIO ELECTRICO',
+    '4 MEDIO ELECTRICO',
+    '1 Y 2 MEDIO PARVULO',
+    '3 MEDIO PARVULO',
+    '4 MEDIO PARVULO'
+];
+
 export default function DashboardEstudiante() {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
@@ -25,9 +37,6 @@ export default function DashboardEstudiante() {
     useEffect(() => {
         const userData = localStorage.getItem('user');
         if (!userData) {
-            const guestUser = { name: 'Invitado CEIA', rut: '12.345.678-K' };
-            setUser(guestUser);
-            fetchProgress(guestUser.rut);
             setLoading(false);
             return;
         }
@@ -35,6 +44,25 @@ export default function DashboardEstudiante() {
         setUser(parsedUser);
         fetchProgress(parsedUser.rut);
     }, []);
+
+    const handleLogin = (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const newUser = {
+            name: formData.get('name'),
+            rut: formData.get('rut'),
+            curso: formData.get('curso')
+        };
+        localStorage.setItem('user', JSON.stringify(newUser));
+        setUser(newUser);
+        fetchProgress(newUser.rut);
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('user');
+        setUser(null);
+        setCompletedTests([]);
+    };
 
     const fetchProgress = async (rut) => {
         try {
@@ -61,6 +89,46 @@ export default function DashboardEstudiante() {
             setCurrentTest(null);
             fetchProgress(user.rut);
         }} />;
+    }
+
+    if (!user) {
+        return (
+            <div className="login-overlay">
+                <motion.div 
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="glass-panel login-card"
+                >
+                    <div className="login-header">
+                        <User size={40} color="var(--primary)" />
+                        <h2>Identificación de Estudiante</h2>
+                        <p>Ingresa tus datos para registrar tus avances en las encuestas.</p>
+                    </div>
+                    <form onSubmit={handleLogin} className="login-form">
+                        <div className="input-group">
+                            <label>Nombre Completo</label>
+                            <input type="text" name="name" placeholder="Ej: Juan Pérez" required />
+                        </div>
+                        <div className="input-group">
+                            <label>RUT</label>
+                            <input type="text" name="rut" placeholder="Ej: 12.345.678-K" required />
+                        </div>
+                        <div className="input-group">
+                            <label>Curso</label>
+                            <select name="curso" required defaultValue="">
+                                <option value="" disabled>Selecciona tu curso...</option>
+                                {COURSES.map(c => (
+                                    <option key={c} value={c}>{c}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <button type="submit" className="btn btn-primary btn-large" style={{ marginTop: '1rem' }}>
+                            Ingresar al Portal
+                        </button>
+                    </form>
+                </motion.div>
+            </div>
+        );
     }
 
     if (loading) {
@@ -92,7 +160,13 @@ export default function DashboardEstudiante() {
             <header className="dash-header">
                 <div className="welcome-section">
                     <h1 className="greeting">Hola, <span className="text-gradient">{(user?.name || 'Estudiante').split(' ')[0]}</span> 👋</h1>
-                    <p className="subtitle" style={{ fontSize: '1rem' }}>Tu progreso: {completedTests.length} de {testList.length} encuestas listas.</p>
+                    <p className="subtitle" style={{ fontSize: '1rem' }}>
+                        {user?.curso} | RUT: {user?.rut}
+                        <button onClick={handleLogout} className="btn-text" style={{ marginLeft: '1rem', color: 'var(--accent)', fontSize: '0.8rem' }}>
+                             (Cambiar Usuario)
+                        </button>
+                    </p>
+                    <p className="subtitle" style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>Tu progreso: {completedTests.length} de {testList.length} encuestas listas.</p>
                 </div>
 
                 <div className="stats-glass">
