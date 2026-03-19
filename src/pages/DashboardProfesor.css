@@ -261,3 +261,74 @@
     background: rgba(250, 204, 21, 0.15);
     color: #facc15;
 }
+
+/* SOPORTE DE IMPRESIÓN PARA EXPEDIENTE CLÍNICO */
+@media print {
+    /* Ocultar todo el dashboard excepto el modal */
+    body * {
+        visibility: hidden;
+    }
+    
+    .dashboard-profesor div[style*="position: fixed"], 
+    .dashboard-profesor div[style*="position: fixed"] * {
+        visibility: visible;
+    }
+
+    .dashboard-profesor div[style*="position: fixed"] {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        background: white !important;
+        visibility: visible !important;
+    }
+
+    /* Estilos específicos para el expediente en papel */
+    .dashboard-profesor div[style*="maxHeight: 90vh"] {
+        max-height: none !important;
+        overflow: visible !important;
+        box-shadow: none !important;
+        border: none !important;
+        width: 100% !important;
+        max-width: none !important;
+        padding: 0 !important;
+        background: white !important;
+        color: black !important;
+    }
+
+    .dashboard-profesor div[style*="maxHeight: 90vh"] * {
+        color: black !important;
+        background-color: transparent !important;
+        border-color: #ddd !important;
+    }
+
+    /* Ocultar botones de cerrar y descargar en el PDF */
+    .dashboard-profesor button {
+        display: none !important;
+    }
+
+    /* Asegurar que los degradados se vean (dentro de lo posible) o usar colores sólidos */
+    .text-gradient {
+        background: none !important;
+        color: black !important;
+        -webkit-text-fill-color: black !important;
+        font-weight: bold;
+    }
+
+    .avatar, .test-badge {
+        background: #f0f0f0 !important;
+        color: black !important;
+        border: 1px solid #ccc !important;
+    }
+
+    /* Evitar saltos de página a mitad de una encuesta */
+    div[style*="borderBottom"] {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    @page {
+        margin: 2cm;
+    }
+}

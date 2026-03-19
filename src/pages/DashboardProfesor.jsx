@@ -351,8 +351,15 @@ export default function DashboardProfesor() {
                                                     <h4 style={{ color: '#ef4444', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><AlertTriangle size={18} /> Focos de Atención Inmediata</h4>
                                                     <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                                                         {test.answers?.filter(ans => {
-                                                            return (ans.inverted && ans.value >= 3) || (!ans.inverted && ans.value <= 2);
-                                                        }).slice(0, 4).map((ans, i) => {
+                                                            const questionData = socioemocionalQuestions.find(q => q.id === ans.id);
+                                                            // Si la pregunta es normal (positiva): alertar si responde 1 (Nunca) o 2 (Algunas veces)
+                                                            // Si la pregunta es invertida (negativa): alertar si responde 3 (Casi siempre) o 4 (Siempre)
+                                                            if (questionData?.inverted) {
+                                                                return ans.value >= 3;
+                                                            } else {
+                                                                return ans.value <= 2;
+                                                            }
+                                                        }).slice(0, 5).map((ans, i) => {
                                                             const qText = socioemocionalQuestions.find(q => q.id === ans.id)?.text;
                                                             const valText = ans.value === 4 ? "Siempre" : ans.value === 3 ? "Casi Siempre" : ans.value === 2 ? "Algunas veces" : "Nunca";
                                                             return (
@@ -362,7 +369,10 @@ export default function DashboardProfesor() {
                                                                 </li>
                                                             )
                                                         })}
-                                                        {(!test.answers || test.answers.filter(ans => (ans.inverted && ans.value >= 3) || (!ans.inverted && ans.value <= 2)).length === 0) && (
+                                                        {(!test.answers || test.answers.filter(ans => {
+                                                            const questionData = socioemocionalQuestions.find(q => q.id === ans.id);
+                                                            return questionData?.inverted ? ans.value >= 3 : ans.value <= 2;
+                                                        }).length === 0) && (
                                                             <li style={{ color: 'var(--text-muted)' }}>No se detectan respuestas críticas urgentes.</li>
                                                         )}
                                                     </ul>
@@ -444,31 +454,80 @@ export default function DashboardProfesor() {
                                             <div>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
                                                     <div>
-                                                        <h3 style={{ color: 'var(--primary)', fontSize: '1.4rem' }}>{test.testId === 'autoeficacia' ? 'Autoeficacia Académica' : 'Clima y Seguridad'}</h3>
-                                                        <p style={{ color: 'var(--text-muted)' }}>Puntaje Directo Obtenido</p>
+                                                        <h3 style={{ color: 'var(--primary)', fontSize: '1.4rem' }}>{test.testId === 'autoeficacia' ? 'Autoeficacia Académica (EAPESA)' : 'Clima y Seguridad (EPCSE)'}</h3>
+                                                        <p style={{ color: 'var(--text-muted)' }}>{test.testId === 'autoeficacia' ? 'Percepción de capacidad y competencia individual' : 'Percepción de respeto y seguridad en el entorno'}</p>
                                                     </div>
                                                     <div style={{ padding: '0.6rem 1.2rem', borderRadius: '30px', fontWeight: 'bold', background: 'rgba(99, 102, 241, 0.2)', color: '#818cf8' }}>
-                                                        Puntaje: {test.scores?.total}
+                                                        {test.testId === 'autoeficacia' ? (
+                                                            test.scores?.total >= 40 ? 'Autoeficacia Alta' : test.scores?.total >= 26 ? 'Autoeficacia Media' : 'Autoeficacia Baja'
+                                                        ) : (
+                                                            test.scores?.total >= 31 ? 'Clima Positivo' : test.scores?.total >= 21 ? 'Clima Regular' : 'Clima Crítico'
+                                                        )}
                                                     </div>
                                                 </div>
-                                                <div style={{ background: 'rgba(99, 102, 241, 0.05)', border: '1px solid rgba(99, 102, 241, 0.2)', padding: '2rem', borderRadius: '16px', textAlign: 'center' }}>
-                                                    <h2 style={{ fontSize: '3rem', fontWeight: 800 }}>{test.scores?.total} <span style={{ fontSize: '1rem', color: 'var(--text-muted)' }}>puntos</span></h2>
-                                                    <p style={{ marginTop: '1rem', color: 'var(--text-muted)' }}>{test.testId === 'autoeficacia' ? 'Percepción de capacidad y competencia individual.' : 'Sensación de seguridad y respeto en el entorno nocturno.'}</p>
+                                                
+                                                <div style={{ background: 'rgba(99, 102, 241, 0.05)', border: '1px solid rgba(99, 102, 241, 0.2)', padding: '2rem', borderRadius: '16px', textAlign: 'center', marginBottom: '2rem' }}>
+                                                    <h2 style={{ fontSize: '3.5rem', fontWeight: 800, margin: 0 }}>{test.scores?.total}</h2>
+                                                    <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>Puntos obtenidos</p>
+                                                    <div style={{ marginTop: '1rem', height: '8px', width: '100%', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', overflow: 'hidden' }}>
+                                                        <div style={{ width: `${(test.scores?.total / (test.testId === 'autoeficacia' ? 50 : 40)) * 100}%`, height: '100%', background: 'var(--primary)' }}></div>
+                                                    </div>
+                                                </div>
+
+                                                <div style={{ background: 'rgba(56, 189, 248, 0.05)', border: '1px solid rgba(56, 189, 248, 0.2)', padding: '1.5rem', borderRadius: '16px' }}>
+                                                    <h4 style={{ color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}><Lightbulb size={18} /> Análisis e Intervención</h4>
+                                                    <p style={{ fontSize: '0.95rem', lineHeight: 1.6, color: 'var(--text-main)' }}>
+                                                        {test.testId === 'autoeficacia' ? (
+                                                            test.scores?.total >= 40 ? 
+                                                            "El estudiante posee una alta confianza en sus recursos cognitivos. Se recomienda desafiarle con tareas de mayor complejidad técnica y fomentar que actúe como tutor de pares." :
+                                                            test.scores?.total >= 26 ?
+                                                            "Percepción de capacidad funcional. Requiere refuerzo positivo constante y el desglose de metas grandes en micro-objetivos para fortalecer su sentido de logro." :
+                                                            "Alerta de baja autoeficacia. Posible evitación de tareas por miedo al fracaso. Requiere acompañamiento estrecho y validación de sus pequeñas fortalezas iniciales."
+                                                        ) : (
+                                                            test.scores?.total >= 31 ? 
+                                                            "El estudiante percibe la escuela como un refugio seguro y de respeto. Ideal para involucrarle en brigadas de convivencia o mediación escolar nocturna." :
+                                                            test.scores?.total >= 21 ?
+                                                            "Existen focos de inseguridad menores (posiblemente accesos o ciertos pasillos). Se sugiere profundizar en entrevista qué zonas o momentos le generan mayor inquietud." :
+                                                            "Percepción de entorno hostil o inseguro. Derivación inmediata para explorar si existe acoso escolar o inseguridad física percibida que esté bloqueando su aprendizaje."
+                                                        )}
+                                                    </p>
                                                 </div>
                                             </div>
                                         ) : test.testId === 'dcsej' ? (
                                             <div>
                                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
                                                     <div>
-                                                        <h3 style={{ color: 'var(--primary)', fontSize: '1.4rem' }}>Test Situacional - Desafío Grupal</h3>
-                                                        <p style={{ color: 'var(--text-muted)' }}>Evaluación de habilidades sociales y asertividad</p>
+                                                        <h3 style={{ color: 'var(--primary)', fontSize: '1.4rem' }}>Test Situacional (DCSE-J): Desafío Grupal</h3>
+                                                        <p style={{ color: 'var(--text-muted)' }}>Manejo de conflictos y asertividad social</p>
                                                     </div>
-                                                    <div style={{ padding: '0.6rem 1.2rem', borderRadius: '30px', fontWeight: 'bold', background: 'rgba(16, 185, 129, 0.2)', color: '#10b981' }}>
+                                                    <div style={{ padding: '0.6rem 1.2rem', borderRadius: '30px', fontWeight: 'bold', background: test.profile === 'Habilidades Sociales Altas' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(244, 63, 94, 0.2)', color: test.profile === 'Habilidades Sociales Altas' ? '#10b981' : '#f43f5e' }}>
                                                         {test.profile}
                                                     </div>
                                                 </div>
-                                                <div style={{ background: 'rgba(0,0,0,0.2)', padding: '1.5rem', borderRadius: '16px' }}>
-                                                    <p style={{ lineHeight: 1.6 }}>El estudiante ha demostrado un perfil de <strong>{test.profile}</strong> al elegir respuestas que priorizan la comunicación asertiva frente a situaciones de conflicto simuladas. Su puntaje total fue de {test.scores?.total} pts.</p>
+                                                
+                                                <div style={{ background: 'rgba(0,0,0,0.2)', padding: '2rem', borderRadius: '16px', marginBottom: '2rem' }}>
+                                                    <h4 style={{ marginBottom: '1rem' }}>Resumen del Perfil Conductual</h4>
+                                                    <p style={{ lineHeight: 1.6, fontSize: '1rem' }}>
+                                                        {test.profile === 'Habilidades Sociales Altas' ? 
+                                                            "El estudiante ha demostrado capacidad de mediación y una comunicación empática. Ante situaciones críticas, elige respuestas que equilibran sus necesidades con las del grupo." :
+                                                            "Se observa una tendencia a la respuesta pasiva o agresiva ante la frustración grupal. El estudiante prioriza la evitación del conflicto en lugar de su resolución asertiva."}
+                                                    </p>
+                                                    <div style={{ marginTop: '1.5rem', display: 'flex', gap: '2rem', alignItems: 'center' }}>
+                                                        <div style={{ flex: 1, height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '3px' }}>
+                                                            <div style={{ width: `${(test.scores?.total / 18) * 100}%`, height: '100%', background: 'var(--primary)' }}></div>
+                                                        </div>
+                                                        <span style={{ fontWeight: 'bold' }}>{test.scores?.total} / 18 pts</span>
+                                                    </div>
+                                                </div>
+
+                                                <div style={{ background: 'rgba(168, 85, 247, 0.05)', border: '1px solid rgba(168, 85, 247, 0.2)', padding: '1.5rem', borderRadius: '16px' }}>
+                                                    <h4 style={{ color: '#a855f7', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}><Sparkles size={18} /> Sugerencia de Intervención Social</h4>
+                                                    <p style={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
+                                                        {test.profile === 'Habilidades Sociales Altas' ? 
+                                                            "Se sugiere otorgarle roles de liderazgo en trabajos colaborativos. Puede servir como monitor de clima escolar para resolver pequeñas disputas entre compañeros." :
+                                                            "Participación recomendada en talleres de Habilidades Sociales (HHS) enfocados en el manejo de la asertividad y la comunicación no verbal defensiva."
+                                                        }
+                                                    </p>
                                                 </div>
                                             </div>
                                         ) : null}
