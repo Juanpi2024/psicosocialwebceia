@@ -23,6 +23,45 @@ const mockResults = [
   }
 ];
 
+const mockDCSEJSituations = [
+  {
+    title: 'Conflicto en trabajo grupal',
+    context: 'Durante un trabajo en equipo, dos compañeros comienzan a discutir y el ambiente se tensa. Tú también debes participar para terminar a tiempo.',
+    options: [
+      { text: 'Ignorar la discusión y hacer tu parte en silencio.', points: 1 },
+      { text: 'Proponer una pausa breve y retomar con turnos para hablar.', points: 3 },
+      { text: 'Retarte con ambos para que se callen de inmediato.', points: 0 }
+    ]
+  },
+  {
+    title: 'Crítica de un docente',
+    context: 'Un profesor corrige tu presentación frente al curso y sientes incomodidad. Aún quedan actividades por realizar.',
+    options: [
+      { text: 'Tomarlo personal y dejar de participar ese día.', points: 0 },
+      { text: 'Pedir una aclaración al final de la clase para mejorar.', points: 3 },
+      { text: 'Responder en el momento para defenderte sin escuchar.', points: 1 }
+    ]
+  },
+  {
+    title: 'Compañero con señales de desánimo',
+    context: 'Notas que un compañero que antes participaba activamente ahora está aislado y evita hablar en clases.',
+    options: [
+      { text: 'No intervenir porque no es tu responsabilidad.', points: 1 },
+      { text: 'Conversar con él/ella y sugerir apoyo del equipo docente.', points: 3 },
+      { text: 'Comentar su situación con otros compañeros en recreo.', points: 0 }
+    ]
+  },
+  {
+    title: 'Presión antes de evaluación',
+    context: 'Horas antes de una prueba importante, sientes mucha ansiedad y te cuesta concentrarte.',
+    options: [
+      { text: 'Abandonar el estudio porque ya no vale la pena.', points: 0 },
+      { text: 'Aplicar respiración breve y organizar un plan de repaso.', points: 3 },
+      { text: 'Copiar un resumen sin revisar si te sirve.', points: 1 }
+    ]
+  }
+];
+
 // Función para poner un límite de tiempo a las peticiones de Firebase
 const withTimeout = (promise, ms = 3000) => {
   return Promise.race([
@@ -39,9 +78,13 @@ export const saveTestResult = async (resultData) => {
     });
     return docRef.id;
   } catch (error) {
-    console.error("Error saving result:", error);
-    return "mock-id-" + Math.random();
+    console.error('Error saving result:', error);
+    return `mock-id-${Math.random()}`;
   }
+};
+
+export const getDCSEJSituations = async () => {
+  return mockDCSEJSituations;
 };
 
 export const getTestResults = async () => {
@@ -49,19 +92,19 @@ export const getTestResults = async () => {
     const q = query(collection(db, 'testResults'), orderBy('timestamp', 'desc'));
     // Si Firebase no responde en 3 segundos, saltamos a los datos de prueba
     const querySnapshot = await withTimeout(getDocs(q), 3000);
-    
+
     const results = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
       timestamp: doc.data().timestamp?.toDate() || new Date()
     }));
-    
+
     return results.length > 0 ? results : mockResults;
   } catch (error) {
     if (error.message === 'Firebase Timeout' || error.name === 'AbortError') {
-      console.warn("⚠️ Firebase lento o abortado. Activando Modo Maqueta.");
+      console.warn('⚠️ Firebase lento o abortado. Activando Modo Maqueta.');
     } else {
-      console.error("Error inesperado en Firebase:", error);
+      console.error('Error inesperado en Firebase:', error);
     }
     return mockResults;
   }
