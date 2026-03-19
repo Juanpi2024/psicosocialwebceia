@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Compass, Sparkles, Smile, Frown, ShieldAlert, Award, ChevronRight, BookOpen } from 'lucide-react';
+import { Compass, Sparkles, Smile, Frown, ShieldAlert, Award, ChevronRight, BookOpen, BrainCircuit } from 'lucide-react';
 import PsychosocialTests from '../components/PsychosocialTests';
 import './DashboardEstudiante.css';
 
@@ -18,7 +18,7 @@ const badges = [
 
 export default function DashboardEstudiante() {
     const [selectedEmotion, setSelectedEmotion] = useState(null);
-    const [currentTest, setCurrentTest] = useState(null); // 'vak' o 'dcsej'
+    const [currentTest, setCurrentTest] = useState(null); 
 
     // Estado para recolectar información del alumno
     const [studentInfo, setStudentInfo] = useState({ id: '', nombre: '', curso: '' });
@@ -87,7 +87,7 @@ export default function DashboardEstudiante() {
                         <span className="stat-label">Resiliencia</span>
                     </div>
                     <div className="stat">
-                        <span className="stat-val text-gradient">2 / 4</span>
+                        <span className="stat-val text-gradient">2 / {6}</span>
                         <span className="stat-label">Tests Completados</span>
                     </div>
                 </div>
@@ -147,17 +147,17 @@ export default function DashboardEstudiante() {
                         <div className="card-header">
                             <h3><BookOpen size={20} color="var(--primary)" /> Encuestas Psicosociales</h3>
                         </div>
-                        <p className="card-desc">Completa estos instrumentos para que tus clases se adapten a tu forma de ser.</p>
+                        <p className="card-desc" style={{ marginBottom: '1.5rem' }}>Completa estos instrumentos para que tus clases se adapten a tu forma de ser.</p>
 
-                        <div className="grid-layout" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
+                        <div className="grid-layout" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
                             <div className="test-promo glass-panel" style={{ padding: '1.2rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)' }}>
-                                <h4 style={{ fontSize: '1rem', marginBottom: '0.4rem' }}>Cuestionario CHAEA</h4>
-                                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '0.5rem 0', minHeight: '3rem' }}>Estilos de aprendizaje: Activo, Reflexivo, Teórico, Pragmático.</p>
+                                <h4 style={{ fontSize: '1rem', marginBottom: '0.4rem' }}>Estilos de Aprendizaje</h4>
+                                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '0.5rem 0', minHeight: '3rem' }}>Modelo VAK y CHAEA: Visual, Auditivo o Kinestésico.</p>
                                 <button className="btn btn-secondary" style={{ width: '100%', fontSize: '0.85rem' }} onClick={() => handleStartTestSequence('chaea')}>Iniciar Test</button>
                             </div>
                             <div className="test-promo glass-panel" style={{ padding: '1.2rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)' }}>
-                                <h4 style={{ fontSize: '1rem', marginBottom: '0.4rem' }}>Adaptación Socioemocional</h4>
-                                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '0.5rem 0', minHeight: '3rem' }}>Diagnóstico DIA: Área Personal, Comunitaria y Ciudadana.</p>
+                                <h4 style={{ fontSize: '1rem', marginBottom: '0.4rem' }}>Resiliencia (SV-RES)</h4>
+                                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: '0.5rem 0', minHeight: '3rem' }}>Evaluación de adaptación y ajuste socioemocional (DIA/SV-RES).</p>
                                 <button className="btn btn-secondary" style={{ width: '100%', fontSize: '0.85rem' }} onClick={() => handleStartTestSequence('socioemocional')}>Iniciar Test</button>
                             </div>
                             <div className="test-promo glass-panel" style={{ padding: '1.2rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-color)' }}>
@@ -181,7 +181,22 @@ export default function DashboardEstudiante() {
                 </div>
 
                 <div className="desktop-sidebar">
-
+                    <section className="glass-panel module-card situational-test-preview">
+                         <div className="card-header">
+                            <h3>Test Situacional (Diagnóstico)</h3>
+                        </div>
+                        <div className="story-snippet" style={{ borderLeftColor: 'var(--primary)' }}>
+                            <h4>"El desafío grupal"</h4>
+                            <p>Una historia interactiva para medir tu asertividad ante un conflicto escolar.</p>
+                        </div>
+                        <button 
+                            className="btn btn-primary" 
+                            style={{ marginTop: '1.5rem', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+                            onClick={() => handleStartTestSequence('dcsej')}
+                        >
+                            Empezar Historia <ChevronRight size={18} />
+                        </button>
+                    </section>
 
                     <section className="glass-panel module-card badges-card">
                         <h3>Praise Badges <Award size={18} style={{ color: 'var(--accent)', marginLeft: '8px' }} /></h3>

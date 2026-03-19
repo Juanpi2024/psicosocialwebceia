@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { BookOpen, CheckCircle, ChevronLeft, Play, Loader2 } from 'lucide-react';
+import { BookOpen, CheckCircle, ChevronLeft, Play, Loader2, Sparkles } from 'lucide-react';
 import './Tests.css';
-import { saveTestResult } from '../services/psychosocialService';
+import { saveTestResult, getDCSEJSituations } from '../services/psychosocialService';
 import { chaeaQuestions, chaeaKey } from '../data/chaeaData';
 import { socioemocionalQuestions, socioemocionalScale, socioemocionalDimensions } from '../data/socioemocionalData';
 import { motivacionQuestions, motivacionScale } from '../data/motivacionData';
@@ -11,11 +11,19 @@ import { climaEscolarQuestions, climaEscolarScale } from '../data/climaEscolarDa
 
 export default function PsychosocialTests({ type, onBack, studentInfo }) {
     const [currentStep, setCurrentStep] = useState(0);
-    const [answers, setAnswers] = useState([]);
-    const [finished, setFinished] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [situations, setSituations] = useState([]);
+    const [selectedOption, setSelectedOption] = useState(null);
+    const [scoreDCSEJ, setScoreDCSEJ] = useState(0);
 
-    // Removed DCSEJ useEffect
+    useEffect(() => {
+        if (type === 'dcsej') {
+            setLoading(true);
+            getDCSEJSituations().then(data => {
+                setSituations(data);
+                setLoading(false);
+            });
+        }
+    }, [type]);
 
     // CHAEA LOGIC
     const handleCHAEAAnswer = async (value) => {
@@ -321,6 +329,92 @@ export default function PsychosocialTests({ type, onBack, studentInfo }) {
                             <button className="btn btn-primary" style={{ padding: '1rem 3rem', fontSize: '1.1rem', marginTop: '2rem' }} onClick={onBack}>Finalizar y Volver</button>
                         </div>
                     )}
+                </div>
+            ) : type === 'dcsej' ? (
+                <div className="test-content">
+                    {!finished && situations.length > 0 ? (
+                        <>
+                            <div className="test-header">
+                                <Sparkles className="text-gradient" size={32} />
+                                <h2>Test Situacional</h2>
+                                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Historia {currentStep + 1} de {situations.length}</p>
+                                <div className="progress-bar">
+                                    <div className="progress-fill" style={{ width: `${((currentStep) / situations.length) * 100}%` }}></div>
+                                </div>
+                            </div>
+
+                            <div className="question-section" style={{ marginTop: '2.5rem' }}>
+                                <div className="situation-box" style={{ background: 'rgba(255,255,255,0.02)', padding: '2rem', borderRadius: '1.5rem', border: '1px solid var(--border-color)', marginBottom: '2rem' }}>
+                                    <h3 style={{ fontSize: '1.3rem', lineHeight: 1.6, fontWeight: 700 }}>
+                                        {situations[currentStep].title}
+                                    </h3>
+                                    <p style={{ marginTop: '1rem', color: 'var(--text-muted)', fontSize: '1.05rem', lineHeight: 1.6 }}>
+                                        {situations[currentStep].context}
+                                    </p>
+                                </div>
+
+                                <div className="options-column">
+                                    {situations[currentStep].options.map((opt, i) => (
+                                        <button
+                                            key={i}
+                                            className={`opt-btn story-opt ${selectedOption === i ? 'selected' : ''}`}
+                                            onClick={() => setSelectedOption(i)}
+                                            style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}
+                                        >
+                                            <div className="opt-indicator">{i + 1}</div>
+                                            <span>{opt.text}</span>
+                                        </button>
+                                    ))}
+                                </div>
+
+                                <div className="test-footer" style={{ marginTop: '3rem', display: 'flex', justifyContent: 'flex-end' }}>
+                                    <button
+                                        className="btn btn-primary"
+                                        disabled={selectedOption === null}
+                                        onClick={async () => {
+                                            const points = situations[currentStep].options[selectedOption].points;
+                                            const newScore = scoreDCSEJ + points;
+                                            setScoreDCSEJ(newScore);
+
+                                            if (currentStep < situations.length - 1) {
+                                                setCurrentStep(currentStep + 1);
+                                                setSelectedOption(null);
+                                            } else {
+                                                setFinished(true);
+                                                const profile = newScore >= 12 ? "Habilidades Sociales Altas" : "Requiere Entrenamiento";
+                                                await saveTestResult(
+                                                    studentInfo.id,
+                                                    studentInfo.nombre || 'Estudiante',
+                                                    studentInfo.curso,
+                                                    'dcsej',
+                                                    { total: newScore },
+                                                    profile,
+                                                    []
+                                                );
+                                            }
+                                        }}
+                                        style={{ padding: '1rem 3rem' }}
+                                    >
+                                        Continuar <ChevronLeft size={18} style={{ transform: 'rotate(180deg)', marginLeft: '8px' }} />
+                                    </button>
+                                </div>
+                            </div>
+                        </>
+                    ) : finished ? (
+                        <div className="result-section">
+                            <CheckCircle size={64} color="var(--secondary)" />
+                            <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>¡Test Finalizado!</h2>
+                            <p style={{ fontSize: '1.2rem', color: 'var(--text-muted)', marginBottom: '2rem' }}>Has completado todas las situaciones del diagnóstico.</p>
+                            <div className="glass-panel" style={{ padding: '2rem', marginBottom: '2rem', borderTop: '4px solid var(--secondary)' }}>
+                                <h4 style={{ color: 'var(--text-muted)', textTransform: 'uppercase', fontSize: '0.8rem', letterSpacing: '2px', marginBottom: '1rem' }}>Resultado Provisorio</h4>
+                                <h3 className="text-gradient" style={{ fontSize: '2rem', fontWeight: 800 }}>
+                                    {scoreDCSEJ >= 12 ? "Liderazgo Asertivo" : "Potencial de Crecimiento"}
+                                </h3>
+                                <p style={{ marginTop: '1rem', color: 'var(--text-muted)' }}>Tu profesor revisará el detalle de tus elecciones para brindarte mejores herramientas.</p>
+                            </div>
+                            <button className="btn btn-primary" style={{ padding: '1rem 4rem' }} onClick={onBack}>Finalizar</button>
+                        </div>
+                    ) : null}
                 </div>
             ) : null}
         </motion.div>

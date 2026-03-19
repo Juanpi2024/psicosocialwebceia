@@ -6,6 +6,7 @@ import { HeartPulse, LayoutDashboard, Search, Users } from 'lucide-react';
 import DashboardEstudiante from './pages/DashboardEstudiante';
 import DashboardProfesor from './pages/DashboardProfesor';
 import PortalFamilias from './pages/PortalFamilias';
+import LandingPage from './pages/LandingPage';
 
 function App() {
   return (
@@ -18,7 +19,7 @@ function App() {
           </div>
 
           <div className="nav-links">
-            <NavLink to="/" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
+            <NavLink to="/estudiante" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <LayoutDashboard size={18} /> Estudiante
               </span>
@@ -38,7 +39,8 @@ function App() {
 
         <main className="main-content">
           <Routes>
-            <Route path="/" element={<DashboardEstudiante />} />
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/estudiante" element={<DashboardEstudiante />} />
             <Route path="/profesor" element={<DashboardProfesor />} />
             <Route path="/familia" element={<PortalFamilias />} />
           </Routes>
