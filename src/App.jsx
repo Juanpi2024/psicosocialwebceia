@@ -98,9 +98,9 @@ const VideoPlayerPage = () => {
                 <span style={{ fontSize: '0.9rem', opacity: 0.5, fontWeight: 'bold', letterSpacing: '2px' }}>MODO: PRESENTACIÓN DE ALTA FIDELIDAD</span>
                 <NavLink to="/" style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: 'bold' }}>SALIR</NavLink>
               </div>
-              <div style={{ borderRadius: '20px', overflow: 'hidden', boxShadow: '0 25px 50px rgba(0,0,0,0.8)' }}>
-                <Player component={VideoPitchComposition} durationInFrames={600} compositionWidth={1920} compositionHeight={1080} fps={30} controls autoPlay loop style={{ width: '100%', aspectRatio: '16/9' }} />
-              </div>
+                <div style={{ borderRadius: '20px', overflow: 'hidden', boxShadow: '0 25px 50px rgba(0,0,0,0.8)' }}>
+                  <Player component={VideoPitchComposition} durationInFrames={600} compositionWidth={1920} compositionHeight={1080} fps={30} controls autoPlay loop style={{ width: '100%', aspectRatio: '16/9' }} />
+                </div>
             </div>
           </motion.div>
         )}

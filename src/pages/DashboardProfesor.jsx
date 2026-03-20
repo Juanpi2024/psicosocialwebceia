@@ -14,19 +14,51 @@ import { Radar } from 'react-chartjs-2';
 import './DashboardProfesor.css';
 import { getTestResults } from '../services/psychosocialService';
 import { socioemocionalQuestions } from '../data/socioemocionalData';
-import { analyzePsychosocialData } from '../services/openaiService';
+import { analyzePsychosocialData, analyzeStudentData } from '../services/openaiService';
+import logoCeia from '../assets/logo_ceia.png';
+
+const ALL_SURVEY_IDS = ['chaea', 'socioemocional', 'motivacion', 'autoeficacia', 'clima', 'dcsej'];
+
+const SURVEY_LABELS = {
+    chaea: 'Estilos de Aprendizaje (CHAEA)',
+    socioemocional: 'DIA Socioemocional',
+    motivacion: 'Motivación Escolar',
+    autoeficacia: 'Autoeficacia Académica',
+    clima: 'Clima de Aula',
+    dcsej: 'Convivencia y Justicia (DCSEJ)'
+};
 
 const COURSES = [
-    '7 Y 8 BASICO',
-    '1 Y 2 MEDIO HC',
-    '3 Y 4 MEDIO HC',
-    '1 Y 2 MEDIO ELECTRICO',
-    '3 MEDIO ELECTRICO',
-    '4 MEDIO ELECTRICO',
-    '1 Y 2 MEDIO PARVULO',
-    '3 MEDIO PARVULO',
-    '4 MEDIO PARVULO'
+    '7° Y 8° BASICO',
+    '1° Y 2° MEDIO HC',
+    '3° Y 4° MEDIO HC',
+    '1° Y 2° MEDIO ELECTRICO',
+    '3° MEDIO ELECTRICO',
+    '4° MEDIO ELECTRICO',
+    '1° Y 2° MEDIO PÁRVULO',
+    '3° MEDIO PÁRVULO',
+    '4° MEDIO PÁRVULO'
 ];
+
+const REPORT_TEMPLATES = {
+    chaea: {
+        ACTIVO: "Alumno con estilo predominante Activo. Aprende mejor con actividades prácticas, dinámicas de grupo y experiencias concretas. Se recomienda incorporar juegos de rol, debates y proyectos manuales.",
+        REFLEXIVO: "Alumno con estilo predominante Reflexivo. Necesita tiempo para observar y analizar antes de actuar. Se recomienda dar espacio para la reflexión, diarios de aprendizaje y actividades de análisis.",
+        TEORICO: "Alumno con estilo predominante Teórico. Busca coherencia lógica y modelos conceptuales. Se recomienda usar mapas conceptuales, lecturas estructuradas y explicaciones con fundamento.",
+        PRAGMATICO: "Alumno con estilo predominante Pragmático. Prefiere la aplicación práctica del conocimiento. Se recomienda vincular contenidos con situaciones reales y proyectos aplicados.",
+        'REFLEXIVO/PRAGMÁTICO': "Perfil mixto Reflexivo-Pragmático. Combina análisis profundo con orientación a la acción. Potenciar con estudios de caso y resolución de problemas reales.",
+        'ACTIVO/PRAGMÁTICO': "Perfil mixto Activo-Pragmático. Aprende haciendo y busca resultados tangibles. Ideal para proyectos prácticos con impacto directo.",
+    },
+    socioemocional: {
+        low: "ALERTA: Perfil descendido en adaptación socioemocional. Se detectan indicadores de riesgo en gestión emocional o interacción social. Se recomienda derivación a equipo de convivencia escolar y seguimiento semanal individualizado.",
+        high: "Perfil saludable en adaptación socioemocional. El estudiante muestra recursos adecuados de regulación emocional y habilidades sociales. Continuar monitoreo preventivo semestral.",
+    },
+    motivacion: {
+        intrinsica: "Predomina la motivación intrínseca. El estudiante muestra interés genuino por aprender y superarse. Reforzar con desafíos progresivos y reconocimiento de logros personales.",
+        extrinsica: "Predomina la motivación extrínseca. El estudiante responde a incentivos externos (notas, reconocimiento). Se sugiere gradualmente vincular el aprendizaje con metas personales significativas.",
+        amotivacion: "ALERTA CRÍTICA: Nivel alto de amotivación detectado. El estudiante no percibe valor en las actividades académicas. Requiere intervención urgente: entrevista personal, identificación de barreras y plan de re-enganche con metas a corto plazo.",
+    }
+};
 
 ChartJS.register(
     RadialLinearScale,
@@ -48,6 +80,8 @@ export default function DashboardProfesor() {
     const [aiLoading, setAiLoading] = useState(false);
     const [userApiKey, setUserApiKey] = useState(localStorage.getItem('openai_key') || '');
     const [showAiConfig, setShowAiConfig] = useState(false);
+    const [studentAiAnalysis, setStudentAiAnalysis] = useState(null);
+    const [studentAiLoading, setStudentAiLoading] = useState(false);
 
     const fetchResults = async () => {
         try {
@@ -365,63 +399,170 @@ export default function DashboardProfesor() {
             {/* MODAL EXPEDIENTE */}
             <AnimatePresence>
                 {selectedStudent && (
-                    <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 2000, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '2rem' }}>
-                        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="glass-panel" style={{ maxWidth: '900px', width: '100%', maxHeight: '90vh', overflowY: 'auto', padding: '3rem', position: 'relative' }}>
-                            <button onClick={() => setSelectedStudent(null)} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', color: 'white' }}><X size={24} /></button>
+                    <div className="print-student-modal" style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 2000, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '2rem' }}>
+                        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="glass-panel print-modal-content" style={{ maxWidth: '1000px', width: '100%', maxHeight: '90vh', overflowY: 'auto', padding: '3rem', position: 'relative' }}>
                             
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', marginBottom: '3rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '2rem' }}>
-                                <div style={{ width: '100px', height: '100px', borderRadius: '50%', background: 'var(--gradient-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', fontWeight: 'bold' }}>{(selectedStudent?.studentName || 'E').charAt(0)}</div>
-                                <div>
-                                    <h2 style={{ fontSize: '2.5rem' }}>{selectedStudent?.studentName || 'Estudiante'}</h2>
-                                    <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>{selectedStudent?.curso || 'Sin curso'} | RUT: {selectedStudent?.studentId || 'Desconocido'}</p>
+                            {/* Header exclusivo para Impresión/PDF */}
+                            <div className="only-print report-header" style={{ display: 'none', borderBottom: '2px solid black', paddingBottom: '1.5rem', marginBottom: '2rem' }}>
+                                <div className="report-header only-print" style={{ textAlign: 'center', borderBottom: '2px solid #333', paddingBottom: '20px', marginBottom: '30px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px', marginBottom: '15px' }}>
+                            <img src={logoCeia} alt="Logo" style={{ height: '80px', width: 'auto' }} />
+                                        <div>
+                                            <h1 style={{ fontSize: '1.8rem', margin: 0 }}>CEIA PARRAL</h1>
+                                            <p style={{ fontSize: '1.2rem', margin: 0, fontWeight: 'bold' }}>EXPEDIENTE PSICOSOCIAL ESTUDIANTIL</p>
+                                            <p style={{ fontSize: '1rem', fontStyle: 'italic' }}>Juanita Zúñiga - Educación de Adultos</p>
+                                        </div>
+                                    </div>
+                                    <p style={{ margin: '15px 0 0', display: 'flex', justifyContent: 'space-between' }}>
+                                        <span><strong>Fecha:</strong> {new Date().toLocaleDateString()}</span>
+                                        <span><strong>RUT Estudiante:</strong> {selectedStudent?.studentId || 'Desconocido'}</span>
+                                    </p>
                                 </div>
                             </div>
 
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
-                                {selectedStudent.tests.map((test, i) => (
-                                    <div key={i} style={{ background: 'rgba(255,255,255,0.02)', padding: '2rem', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-                                            <h3 style={{ color: 'var(--primary)' }}>{test.testId.toUpperCase()}</h3>
-                                            <span style={{ padding: '0.4rem 1rem', borderRadius: '20px', background: test.profile?.includes('Apoyo') ? '#ef4444' : 'var(--primary)', fontWeight: 'bold' }}>{test.profile}</span>
-                                        </div>
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '2rem' }}>
-                                            <div style={{ height: '200px' }}>
-                                                <Radar 
-                                                    data={{
-                                                        labels: Object.keys(test.scores || {}),
-                                                        datasets: [{
-                                                            data: Object.values(test.scores || {}),
-                                                            backgroundColor: 'rgba(99, 102, 241, 0.3)',
-                                                            borderColor: 'rgba(99, 102, 241, 1)'
-                                                        }]
-                                                    }} 
-                                                    options={radarOptions} 
-                                                />
-                                            </div>
-                                            <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1.5rem', borderRadius: '16px' }}>
-                                                <h4 style={{ marginBottom: '1rem', color: 'var(--accent)' }}><Lightbulb size={18} /> Recomendación</h4>
-                                                <p style={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
-                                                    {test.profile?.includes('Apoyo') ? "Priorizar seguimiento en consejo de curso e informar a equipo PIE." : "Continuar monitoreo preventivo semestral."}
-                                                </p>
-                                                
-                                                {test.testId === 'socioemocional' && (
-                                                    <div style={{ marginTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1rem' }}>
-                                                        <h5 style={{ color: '#ef4444', marginBottom: '0.5rem' }}>Respuestas Críticas:</h5>
-                                                        <ul style={{ fontSize: '0.8rem', color: 'var(--text-muted)', listStyle: 'none', padding: 0 }}>
-                                                            {test.answers?.slice(0, 3).map((ans, idx) => (
-                                                                <li key={idx} style={{ marginBottom: '0.4rem' }}>
-                                                                    - "{socioemocionalQuestions.find(q => q.id === ans.id)?.text}" ({ans.value} pts)
-                                                                </li>
-                                                            ))}
-                                                        </ul>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
+                            <button className="no-print" onClick={() => { setSelectedStudent(null); setStudentAiAnalysis(null); }} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'rgba(255,255,255,0.05)', border: 'none', color: 'white', borderRadius: '50%', padding: '0.5rem', cursor: 'pointer', zIndex: 10 }}>
+                                <X size={24} />
+                            </button>
+                            
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', marginBottom: '3rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '2rem' }}>
+                                <div style={{ width: '100px', height: '100px', borderRadius: '50%', background: 'var(--gradient-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.5rem', fontWeight: 'bold' }}>{(selectedStudent?.studentName || 'E').charAt(0)}</div>
+                                <div style={{ flex: 1 }}>
+                                    <h2 style={{ fontSize: '2.5rem' }}>{selectedStudent?.studentName || 'Estudiante'}</h2>
+                                    <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>{selectedStudent?.curso || 'Sin curso'} | RUT: {selectedStudent?.studentId || 'Desconocido'}</p>
+                                    <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                                        <span style={{ background: 'rgba(52, 211, 153, 0.1)', color: '#34d399', padding: '0.3rem 0.8rem', borderRadius: '12px', fontSize: '0.85rem' }}>
+                                            {selectedStudent.tests.length} de 6 Test Completados
+                                        </span>
+                                        <span style={{ background: 'rgba(255, 255, 255, 0.05)', color: 'white', padding: '0.3rem 0.8rem', borderRadius: '12px', fontSize: '0.85rem' }}>
+                                            Último movimiento: {new Date().toLocaleDateString()}
+                                        </span>
                                     </div>
-                                ))}
+                                </div>
+                                <button 
+                                    onClick={async () => {
+                                        setStudentAiLoading(true);
+                                        const analysis = await analyzeStudentData(selectedStudent, userApiKey);
+                                        setStudentAiAnalysis(analysis);
+                                        setStudentAiLoading(false);
+                                    }}
+                                    className="btn no-print" 
+                                    style={{ 
+                                        background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', 
+                                        color: 'white', 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        gap: '0.5rem',
+                                        padding: '1rem 1.5rem'
+                                    }}
+                                    disabled={studentAiLoading}
+                                >
+                                    {studentAiLoading ? <Loader2 size={18} className="spin" /> : <Sparkles size={18} />}
+                                    Analizar Caso con IA
+                                </button>
                             </div>
-                            <button onClick={() => window.print()} className="btn btn-primary" style={{ marginTop: '3rem', width: '100%' }}><FileText size={18} /> Descargar Informe de Alumno</button>
+
+                            {studentAiAnalysis && (
+                                <motion.div 
+                                    initial={{ opacity: 0, scale: 0.98 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    style={{ background: 'rgba(168, 85, 247, 0.05)', padding: '2rem', borderRadius: '24px', border: '1px solid rgba(168, 85, 247, 0.2)', marginBottom: '3rem' }}
+                                >
+                                    <h3 style={{ color: '#a855f7', display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
+                                        <Sparkles size={20} /> Informe Estratégico AI
+                                    </h3>
+                                    <div style={{ fontSize: '1rem', lineHeight: '1.8', whiteSpace: 'pre-line', color: 'rgba(255,255,255,0.9)' }}>
+                                        {studentAiAnalysis}
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+                                <h3 className="only-print" style={{ color: 'black', margin: '1rem 0', borderBottom: '1px solid #ccc' }}>Detalle de Instrumentos Aplicados</h3>
+                                
+                                {ALL_SURVEY_IDS.map((testId, i) => {
+                                    const test = selectedStudent.tests.find(t => t.testId === testId);
+                                    
+                                    if (!test) {
+                                        return (
+                                            <div key={testId} style={{ background: 'rgba(255,255,255,0.01)', padding: '1.5rem', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.1)' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <h4 style={{ color: 'var(--text-muted)' }}>{SURVEY_LABELS[testId]}</h4>
+                                                    <span style={{ fontSize: '0.8rem', color: '#fb7185' }}>(PENDIENTE DE REALIZACIÓN)</span>
+                                                </div>
+                                            </div>
+                                        );
+                                    }
+
+                                    return (
+                                        <div key={testId} className="test-report-block" style={{ background: 'rgba(255,255,255,0.02)', padding: '2rem', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.05)', pageBreakInside: 'avoid' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+                                                <h3 style={{ color: 'var(--primary)' }}>{SURVEY_LABELS[testId]}</h3>
+                                                <span style={{ padding: '0.4rem 1rem', borderRadius: '20px', background: test.profile?.includes('Apoyo') || test.profile?.includes('Riesgo') ? '#ef4444' : 'var(--primary)', fontWeight: 'bold' }}>{test.profile}</span>
+                                            </div>
+                                            <div className="report-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '2rem' }}>
+                                                <div className="chart-wrapper" style={{ height: '250px' }}>
+                                                    <Radar 
+                                                        data={{
+                                                            labels: Object.keys(test.scores || {}),
+                                                            datasets: [{
+                                                                data: Object.values(test.scores || {}),
+                                                                backgroundColor: test.profile?.includes('Riesgo') || test.profile?.includes('Baja') 
+                                                                    ? 'rgba(239, 68, 68, 0.3)' 
+                                                                    : 'rgba(99, 102, 241, 0.3)',
+                                                                borderColor: test.profile?.includes('Riesgo') || test.profile?.includes('Baja')
+                                                                    ? 'rgba(239, 68, 68, 1)'
+                                                                    : 'rgba(99, 102, 241, 1)',
+                                                                borderWidth: 2,
+                                                                pointBackgroundColor: 'white'
+                                                            }]
+                                                        }} 
+                                                        options={radarOptions} 
+                                                    />
+                                                </div>
+                                                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1.5rem', borderRadius: '16px' }}>
+                                                    <h4 style={{ marginBottom: '1rem', color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Lightbulb size={18} /> Orientación Pedagógica</h4>
+                                                    <p style={{ fontSize: '1rem', lineHeight: 1.6, color: 'var(--text-main)', marginBottom: '1.2rem' }}>
+                                                        {test.testId === 'chaea' && (
+                                                            REPORT_TEMPLATES.chaea[test.profile.toUpperCase()] || 
+                                                            "Alumno con perfil versátil. Se recomienda variar las metodologías de enseñanza para cubrir todas las dimensiones."
+                                                        )}
+                                                        {test.testId === 'socioemocional' && (
+                                                            test.scores?.GestionEmocional < 3 || test.scores?.Resiliencia < 3 ? 
+                                                            REPORT_TEMPLATES.socioemocional.low : REPORT_TEMPLATES.socioemocional.high
+                                                        )}
+                                                        {test.testId === 'motivacion' && (
+                                                            test.scores?.Amotivacion > 3 ? REPORT_TEMPLATES.motivacion.amotivacion : 
+                                                            (test.scores?.Intrinsica > test.scores?.Extrinsica ? REPORT_TEMPLATES.motivacion.intrinsica : REPORT_TEMPLATES.motivacion.extrinsica)
+                                                        )}
+                                                        {(!['chaea', 'socioemocional', 'motivacion'].includes(test.testId)) && (
+                                                            test.profile?.includes('Baja') || test.profile?.includes('Riesgo') ? 
+                                                            "ALERTA: Perfil descendido. Requiere refuerzo positivo y seguimiento académico cercano." :
+                                                            "Perfil satisfactorio. Continuar con el refuerzo de los logros alcanzados."
+                                                        )}
+                                                    </p>
+                                                    <div className="hallazgo-box" style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '12px', fontSize: '0.85rem' }}>
+                                                        <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>Hallazgo clave:</span> {test.profile}
+                                                    </div>
+                                                    
+                                                    {test.testId === 'socioemocional' && (
+                                                        <div style={{ marginTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1rem' }}>
+                                                            <h5 style={{ color: '#ef4444', marginBottom: '0.5rem' }}>Respuestas Críticas Detectadas:</h5>
+                                                            <ul style={{ fontSize: '0.8rem', color: 'var(--text-muted)', listStyle: 'none', padding: 0 }}>
+                                                                {test.answers?.slice(0, 3).map((ans, idx) => (
+                                                                    <li key={idx} style={{ marginBottom: '0.4rem' }}>
+                                                                        - "{socioemocionalQuestions.find(q => q.id === ans.id)?.text}" ({ans.value} pts)
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                            <button onClick={() => window.print()} className="btn btn-primary no-print" style={{ marginTop: '3rem', width: '100%', gap: '1rem' }}><FileText size={18} /> Generar Expediente PDF Profesional</button>
                         </motion.div>
                     </div>
                 )}

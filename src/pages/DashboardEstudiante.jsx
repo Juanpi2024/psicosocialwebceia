@@ -14,15 +14,15 @@ const emotions = [
 ];
 
 const COURSES = [
-    '7 Y 8 BASICO',
-    '1 Y 2 MEDIO HC',
-    '3 Y 4 MEDIO HC',
-    '1 Y 2 MEDIO ELECTRICO',
-    '3 MEDIO ELECTRICO',
-    '4 MEDIO ELECTRICO',
-    '1 Y 2 MEDIO PARVULO',
-    '3 MEDIO PARVULO',
-    '4 MEDIO PARVULO'
+    '7° Y 8° BASICO',
+    '1° Y 2° MEDIO HC',
+    '3° Y 4° MEDIO HC',
+    '1° Y 2° MEDIO ELECTRICO',
+    '3° MEDIO ELECTRICO',
+    '4° MEDIO ELECTRICO',
+    '1° Y 2° MEDIO PÁRVULO',
+    '3° MEDIO PÁRVULO',
+    '4° MEDIO PÁRVULO'
 ];
 
 export default function DashboardEstudiante() {
