@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { ShieldAlert, BarChart3, Users, Award, FileText, Loader2, BookOpen, BrainCircuit, X, AlertTriangle, Lightbulb, Sparkles } from 'lucide-react';
 import {
     Chart as ChartJS,
@@ -82,6 +83,7 @@ export default function DashboardProfesor() {
     const [showAiConfig, setShowAiConfig] = useState(false);
     const [studentAiAnalysis, setStudentAiAnalysis] = useState(null);
     const [studentAiLoading, setStudentAiLoading] = useState(false);
+    const navigate = useNavigate();
 
     const fetchResults = async () => {
         try {
@@ -252,7 +254,7 @@ export default function DashboardProfesor() {
                             </button>
                         </div>
                         <button onClick={() => setShowAiConfig(!showAiConfig)} className="btn btn-secondary" style={{ borderRadius: '50%', width: '45px', height: '45px', padding: 0, background: userApiKey ? 'rgba(168, 85, 247, 0.2)' : 'rgba(255,255,255,0.05)' }}><Sparkles size={20} color={userApiKey ? '#a855f7' : 'white'} /></button>
-                        <button onClick={() => setShowHelp(true)} className="btn btn-secondary" style={{ borderRadius: '50%', width: '45px', height: '45px', padding: 0 }}><BookOpen size={20} /></button>
+                        <button onClick={() => navigate('/ayuda')} className="btn btn-secondary" style={{ borderRadius: '50%', width: '45px', height: '45px', padding: 0 }} title="Ir al Centro de Ayuda"><BookOpen size={20} /></button>
                     </div>
                 </div>
 
@@ -298,27 +300,6 @@ export default function DashboardProfesor() {
                 </div>
             </header>
 
-            <AnimatePresence>
-                {showHelp && (
-                    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1000, background: 'rgba(3, 7, 18, 0.95)', backdropFilter: 'blur(15px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-                        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="glass-panel" style={{ maxWidth: '800px', width: '100%', padding: '3rem', border: '1px solid var(--primary)' }}>
-                            <button onClick={() => setShowHelp(false)} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}><X size={24} /></button>
-                            <h2 style={{ fontSize: '2rem', marginBottom: '1.5rem' }}><BookOpen className="text-gradient" size={30} /> Guía Técnica de Instrumentos</h2>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
-                                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '12px' }}>
-                                    <h4 style={{ color: 'var(--primary)' }}>CHAEA</h4>
-                                    <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Mide estilos de aprendizaje Activo, Reflexivo, Teórico y Pragmático para adaptar la pedagogía.</p>
-                                </div>
-                                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '12px' }}>
-                                    <h4 style={{ color: 'var(--secondary)' }}>DIA Socioemocional</h4>
-                                    <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Basado en estándares Mineduc. Detecta niveles de adaptación y convivencia grupal.</p>
-                                </div>
-                            </div>
-                            <button onClick={() => setShowHelp(false)} className="btn btn-primary" style={{ width: '100%' }}>Entendido</button>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
 
             <main style={{ padding: '2.5rem' }}>
                 {activeTab === 'overview' ? (

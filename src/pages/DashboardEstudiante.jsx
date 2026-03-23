@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Compass, Smile, Frown, ShieldAlert, BookOpen, BrainCircuit, Sparkles, Award, ChevronRight, User, X, AlertCircle, Lightbulb, Loader2 } from 'lucide-react';
+import { Compass, Smile, Frown, ShieldAlert, BookOpen, BrainCircuit, Sparkles, Award, ChevronRight, User, X, AlertCircle, Lightbulb, Loader2, HelpCircle } from 'lucide-react';
 import PsychosocialTests from '../components/PsychosocialTests';
 import { getTestResults } from '../services/psychosocialService';
 import './DashboardEstudiante.css';
@@ -169,11 +169,19 @@ export default function DashboardEstudiante() {
                     <p className="subtitle" style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>Tu progreso: {completedTests.length} de {testList.length} encuestas listas.</p>
                 </div>
 
-                <div className="stats-glass">
+                <div className="stats-glass" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                     <div className="stat">
                         <span className="stat-val text-gradient">{progressPercentage}%</span>
                         <span className="stat-label">Completado</span>
                     </div>
+                    <button 
+                        onClick={() => navigate('/ayuda')} 
+                        className="glass-btn" 
+                        style={{ padding: '0.8rem', borderRadius: '50%', width: '45px', height: '45px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--primary-glow)', background: 'rgba(99, 102, 241, 0.1)' }}
+                        title="Manual de Ayuda"
+                    >
+                        <HelpCircle size={24} color="var(--primary)" />
+                    </button>
                 </div>
             </header>
 
