@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Compass, Smile, Frown, ShieldAlert, BookOpen, BrainCircuit, Sparkles, Award, ChevronRight, User, X, AlertCircle, Lightbulb, Loader2 } from 'lucide-react';
+import { Compass, Smile, Frown, ShieldAlert, BookOpen, BrainCircuit, Sparkles, Award, ChevronRight, User, X, AlertCircle, Lightbulb, Loader2, Globe } from 'lucide-react';
 import PsychosocialTests from '../components/PsychosocialTests';
 import { getTestResults } from '../services/psychosocialService';
 import './DashboardEstudiante.css';
@@ -70,7 +70,7 @@ export default function DashboardEstudiante() {
         );
     }
 
-    const progressPercentage = Math.round((completedTests.length / 6) * 100);
+    const progressPercentage = Math.round((completedTests.length / 7) * 100);
 
     return (
         <motion.div
@@ -98,7 +98,7 @@ export default function DashboardEstudiante() {
                             <span className="stat-label">Progreso</span>
                         </div>
                         <div className="stat">
-                            <span className="stat-val text-gradient">{completedTests.length}/6</span>
+                            <span className="stat-val text-gradient">{completedTests.length}/7</span>
                             <span className="stat-label">Completados</span>
                         </div>
                     </div>
@@ -205,6 +205,7 @@ export default function DashboardEstudiante() {
                                 { id: 'motivacion', title: 'Motivación Educativa', desc: '¿Qué te impulsa a estudiar?', icon: Compass },
                                 { id: 'autoeficacia', title: 'Autoeficacia Académica', desc: 'Confianza en tus capacidades.', icon: BrainCircuit },
                                 { id: 'clima', title: 'Clima y Seguridad', desc: 'Tu percepción de la jornada nocturna.', icon: Award },
+                                { id: 'participacion', title: 'Participación Ciudadana', desc: 'Tu interés e involucramiento en la comunidad educativa.', icon: Globe },
                                 { id: 'dcsej', title: 'Desafío Grupal (Historia)', desc: 'Resuelve situaciones de convivencia.', icon: ChevronRight }
                             ].map((test, index) => {
                                 const Icon = test.icon;

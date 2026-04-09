@@ -9,6 +9,7 @@ import { socioemocionalQuestions, socioemocionalScale } from '../data/socioemoci
 import { motivacionQuestions, motivacionScale } from '../data/motivacionData';
 import { autoeficaciaQuestions, autoeficaciaScale } from '../data/autoeficaciaData';
 import { climaEscolarQuestions, climaEscolarScale } from '../data/climaEscolarData';
+import { participacionQuestions, participacionScale } from '../data/participacionData';
 
 export default function PsychosocialTests({ type, onBack, studentInfo }) {
     const [currentStep, setCurrentStep] = useState(0);
@@ -293,32 +294,32 @@ export default function PsychosocialTests({ type, onBack, studentInfo }) {
                         </div>
                     )}
                 </div>
-            ) : type === 'motivacion' || type === 'autoeficacia' || type === 'clima' ? (
+            ) : type === 'motivacion' || type === 'autoeficacia' || type === 'clima' || type === 'participacion' ? (
                 <div className="test-content">
                     {!finished ? (
                         <>
                             <div className="test-header">
                                 <Play className="text-gradient" size={32} />
-                                <h2>{type === 'motivacion' ? 'Escala de Motivación (EME-S)' : type === 'autoeficacia' ? 'Autoeficacia Académica' : 'Clima y Seguridad (EPJA)'}</h2>
+                                <h2>{type === 'motivacion' ? 'Escala de Motivación (EME-S)' : type === 'autoeficacia' ? 'Autoeficacia Académica' : type === 'clima' ? 'Clima y Seguridad (EPJA)' : 'Participación y Formación Ciudadana'}</h2>
                                 <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                                    Ítem {currentStep + 1} de {type === 'motivacion' ? motivacionQuestions.length : type === 'autoeficacia' ? autoeficaciaQuestions.length : climaEscolarQuestions.length}
+                                    Ítem {currentStep + 1} de {type === 'motivacion' ? motivacionQuestions.length : type === 'autoeficacia' ? autoeficaciaQuestions.length : type === 'clima' ? climaEscolarQuestions.length : participacionQuestions.length}
                                 </p>
                                 <div className="progress-bar">
                                     <div
                                         className="progress-fill"
-                                        style={{ width: `${((currentStep) / (type === 'motivacion' ? motivacionQuestions.length : type === 'autoeficacia' ? autoeficaciaQuestions.length : climaEscolarQuestions.length)) * 100}%` }}
+                                        style={{ width: `${((currentStep) / (type === 'motivacion' ? motivacionQuestions.length : type === 'autoeficacia' ? autoeficaciaQuestions.length : type === 'clima' ? climaEscolarQuestions.length : participacionQuestions.length)) * 100}%` }}
                                     ></div>
                                 </div>
                             </div>
 
                             <div className="question-section" style={{ marginTop: '2rem' }}>
                                 <h3 style={{ fontSize: '1.4rem', lineHeight: 1.6, minHeight: '80px', color: 'var(--text-main)' }}>
-                                    "{type === 'motivacion' ? motivacionQuestions[currentStep].text : type === 'autoeficacia' ? autoeficaciaQuestions[currentStep].text : climaEscolarQuestions[currentStep].text}"
+                                    "{type === 'motivacion' ? motivacionQuestions[currentStep].text : type === 'autoeficacia' ? autoeficaciaQuestions[currentStep].text : type === 'clima' ? climaEscolarQuestions[currentStep].text : participacionQuestions[currentStep].text}"
                                 </h3>
                                 <div className="options-column" style={{ marginTop: '2rem', gap: '0.8rem' }}>
-                                    {(type === 'motivacion' ? motivacionScale : type === 'autoeficacia' ? autoeficaciaScale : climaEscolarScale).map((opt, i) => (
+                                    {(type === 'motivacion' ? motivacionScale : type === 'autoeficacia' ? autoeficaciaScale : type === 'clima' ? climaEscolarScale : participacionScale).map((opt, i) => (
                                         <button key={i} className="opt-btn story-opt" style={{ textAlign: 'left', padding: '1rem', background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(255,255,255,0.1)' }} 
-                                            onClick={() => handleGenericAnswer(opt.value, (type === 'motivacion' ? motivacionQuestions : type === 'autoeficacia' ? autoeficaciaQuestions : climaEscolarQuestions), type)}>
+                                            onClick={() => handleGenericAnswer(opt.value, (type === 'motivacion' ? motivacionQuestions : type === 'autoeficacia' ? autoeficaciaQuestions : type === 'clima' ? climaEscolarQuestions : participacionQuestions), type)}>
                                             {opt.label}
                                         </button>
                                     ))}
