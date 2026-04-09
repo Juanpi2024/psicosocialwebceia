@@ -5,13 +5,14 @@ import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-do
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   HeartPulse, LayoutDashboard, Users, Code2, 
-  Globe, Heart, ShieldCheck, X, Sparkles, Rocket, FileText
+  Globe, Heart, ShieldCheck, X, Sparkles, Rocket, FileText, BookOpen
 } from 'lucide-react';
 
 import DashboardEstudiante from './pages/DashboardEstudiante';
 import DashboardProfesor from './pages/DashboardProfesor';
 import PortalFamilias from './pages/PortalFamilias';
 import LandingPage from './pages/LandingPage';
+import Help from './pages/Help';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -51,6 +52,9 @@ const Layout = ({ children, setShowCredits }) => (
         <NavLink to="/" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Inicio</NavLink>
         <NavLink to="/estudiante" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Estudiante</NavLink>
         <NavLink to="/profesor" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Profesor</NavLink>
+        <NavLink to="/ayuda" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <BookOpen size={16} /> Ayuda
+        </NavLink>
       </div>
     </nav>
     <main className="main-content">
@@ -98,9 +102,9 @@ const VideoPlayerPage = () => {
                 <span style={{ fontSize: '0.9rem', opacity: 0.5, fontWeight: 'bold', letterSpacing: '2px' }}>MODO: PRESENTACIÓN DE ALTA FIDELIDAD</span>
                 <NavLink to="/" style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: 'bold' }}>SALIR</NavLink>
               </div>
-              <div style={{ borderRadius: '20px', overflow: 'hidden', boxShadow: '0 25px 50px rgba(0,0,0,0.8)' }}>
-                <Player component={VideoPitchComposition} durationInFrames={600} compositionWidth={1920} compositionHeight={1080} fps={30} controls autoPlay loop style={{ width: '100%', aspectRatio: '16/9' }} />
-              </div>
+                <div style={{ borderRadius: '20px', overflow: 'hidden', boxShadow: '0 25px 50px rgba(0,0,0,0.8)' }}>
+                  <Player component={VideoPitchComposition} durationInFrames={600} compositionWidth={1920} compositionHeight={1080} fps={30} controls autoPlay loop style={{ width: '100%', aspectRatio: '16/9' }} />
+                </div>
             </div>
           </motion.div>
         )}
@@ -122,6 +126,7 @@ function App() {
             <Route path="/estudiante" element={<Layout setShowCredits={setShowCredits}><DashboardEstudiante /></Layout>} />
             <Route path="/profesor" element={<Layout setShowCredits={setShowCredits}><DashboardProfesor /></Layout>} />
             <Route path="/familia" element={<Layout setShowCredits={setShowCredits}><PortalFamilias /></Layout>} />
+            <Route path="/ayuda" element={<Help />} />
           </Routes>
         </ErrorBoundary>
 

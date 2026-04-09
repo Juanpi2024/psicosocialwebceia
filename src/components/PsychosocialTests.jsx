@@ -47,8 +47,8 @@ export default function PsychosocialTests({ type, onBack, studentInfo }) {
             const { mainStyle, scores } = profileVal;
 
             await saveTestResult(
-                studentInfo.id,
-                studentInfo.nombre || 'Estudiante Desconocido',
+                studentInfo.rut || studentInfo.id || 'ANONIMO',
+                studentInfo.nombre || studentInfo.name || 'Estudiante Desconocido',
                 studentInfo.curso,
                 'chaea',
                 scores,
@@ -98,8 +98,8 @@ export default function PsychosocialTests({ type, onBack, studentInfo }) {
             const result = calculateSocioemocionalResult(newAnswers);
 
             await saveTestResult(
-                studentInfo.id,
-                studentInfo.nombre || 'Estudiante Desconocido',
+                studentInfo.rut || studentInfo.id || 'ANONIMO',
+                studentInfo.nombre || studentInfo.name || 'Estudiante Desconocido',
                 studentInfo.curso,
                 'socioemocional',
                 result.scores,
@@ -152,8 +152,8 @@ export default function PsychosocialTests({ type, onBack, studentInfo }) {
             }
 
             await saveTestResult(
-                studentInfo.id,
-                studentInfo.nombre || 'Estudiante Desconocido',
+                studentInfo.rut || studentInfo.id || 'ANONIMO',
+                studentInfo.nombre || studentInfo.name || 'Estudiante Desconocido',
                 studentInfo.curso,
                 testType,
                 scores,

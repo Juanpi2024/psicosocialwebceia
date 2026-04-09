@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Compass, Smile, Frown, ShieldAlert, BookOpen, BrainCircuit, Sparkles, Award, ChevronRight, User, X, AlertCircle, Lightbulb, Loader2, Globe } from 'lucide-react';
+import { Compass, Smile, Frown, ShieldAlert, BookOpen, BrainCircuit, Sparkles, Award, ChevronRight, User, X, AlertCircle, Lightbulb, Loader2, Globe, HelpCircle } from 'lucide-react';
 import PsychosocialTests from '../components/PsychosocialTests';
 import { getTestResults } from '../services/psychosocialService';
 import './DashboardEstudiante.css';
@@ -11,6 +11,18 @@ const emotions = [
     { id: 'calma', label: 'Calma', color: '#3B82F6', icon: Compass },
     { id: 'frustracion', label: 'Frustración', color: '#F59E0B', icon: Frown },
     { id: 'ansiedad', label: 'Ansiedad', color: '#8B5CF6', icon: ShieldAlert },
+];
+
+const COURSES = [
+    '7° Y 8° BASICO',
+    '1° Y 2° MEDIO HC',
+    '3° Y 4° MEDIO HC',
+    '1° Y 2° MEDIO ELECTRICO',
+    '3° MEDIO ELECTRICO',
+    '4° MEDIO ELECTRICO',
+    '1° Y 2° MEDIO PÁRVULO',
+    '3° MEDIO PÁRVULO',
+    '4° MEDIO PÁRVULO'
 ];
 
 export default function DashboardEstudiante() {
@@ -25,9 +37,6 @@ export default function DashboardEstudiante() {
     useEffect(() => {
         const userData = localStorage.getItem('user');
         if (!userData) {
-            const guestUser = { name: 'Invitado CEIA', rut: '12.345.678-K' };
-            setUser(guestUser);
-            fetchProgress(guestUser.rut);
             setLoading(false);
             return;
         }
@@ -35,6 +44,25 @@ export default function DashboardEstudiante() {
         setUser(parsedUser);
         fetchProgress(parsedUser.rut);
     }, []);
+
+    const handleLogin = (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const newUser = {
+            name: formData.get('name'),
+            rut: formData.get('rut'),
+            curso: formData.get('curso')
+        };
+        localStorage.setItem('user', JSON.stringify(newUser));
+        setUser(newUser);
+        fetchProgress(newUser.rut);
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('user');
+        setUser(null);
+        setCompletedTests([]);
+    };
 
     const fetchProgress = async (rut) => {
         try {
@@ -52,6 +80,7 @@ export default function DashboardEstudiante() {
     };
 
     const handleStartTestSequence = (testId) => {
+        window.scrollTo(0, 0); // Asegurar que el test empiece arriba
         setCurrentTest(testId);
     };
 
@@ -62,6 +91,46 @@ export default function DashboardEstudiante() {
         }} />;
     }
 
+    if (!user) {
+        return (
+            <div className="login-overlay">
+                <motion.div 
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="glass-panel login-card"
+                >
+                    <div className="login-header">
+                        <User size={40} color="var(--primary)" />
+                        <h2>Identificación de Estudiante</h2>
+                        <p>Ingresa tus datos para registrar tus avances en las encuestas.</p>
+                    </div>
+                    <form onSubmit={handleLogin} className="login-form">
+                        <div className="input-group">
+                            <label>Nombre Completo</label>
+                            <input type="text" name="name" placeholder="Ej: Juan Pérez" required />
+                        </div>
+                        <div className="input-group">
+                            <label>RUT</label>
+                            <input type="text" name="rut" placeholder="Ej: 12.345.678-K" required />
+                        </div>
+                        <div className="input-group">
+                            <label>Curso</label>
+                            <select name="curso" required defaultValue="">
+                                <option value="" disabled>Selecciona tu curso...</option>
+                                {COURSES.map(c => (
+                                    <option key={c} value={c}>{c}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <button type="submit" className="btn btn-primary btn-large" style={{ marginTop: '1rem' }}>
+                            Ingresar al Portal
+                        </button>
+                    </form>
+                </motion.div>
+            </div>
+        );
+    }
+
     if (loading) {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: 'var(--bg-body)' }}>
@@ -70,18 +139,35 @@ export default function DashboardEstudiante() {
         );
     }
 
-    const progressPercentage = Math.round((completedTests.length / 7) * 100);
+    const testList = [
+        { id: 'chaea', title: 'Estilos de Aprendizaje', desc: 'Identifica cómo prefieres aprender.', icon: Sparkles },
+        { id: 'socioemocional', title: 'Adaptación Socioemocional', desc: 'Tu bienestar y autoconocimiento.', icon: ShieldAlert },
+        { id: 'motivacion', title: 'Motivación Educativa', desc: '¿Qué te impulsa a estudiar?', icon: Compass },
+        { id: 'autoeficacia', title: 'Autoeficacia Académica', desc: 'Confianza en tus capacidades.', icon: BrainCircuit },
+        { id: 'clima', title: 'Clima y Seguridad', desc: 'Tu percepción de la jornada nocturna.', icon: Award },
+        { id: 'participacion', title: 'Participación Ciudadana', desc: 'Tu interés e involucramiento en la comunidad educativa.', icon: Globe },
+        { id: 'dcsej', title: 'Desafío Grupal (Historia)', desc: 'Resuelve situaciones de convivencia.', icon: ChevronRight }
+    ];
+
+    const progressPercentage = Math.round((completedTests.length / testList.length) * 100);
 
     return (
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="dashboard-estudiante"
+            style={{ paddingBottom: '10rem' }} // Mucho mas espacio abajo
         >
             <header className="dash-header">
                 <div className="welcome-section">
                     <h1 className="greeting">Hola, <span className="text-gradient">{(user?.name || 'Estudiante').split(' ')[0]}</span> 👋</h1>
-                    <p className="subtitle">Tu mapa psicosocial de hoy. ¿Cómo está tu brújula interior?</p>
+                    <p className="subtitle" style={{ fontSize: '1rem' }}>
+                        {user?.curso} | RUT: {user?.rut}
+                        <button onClick={handleLogout} className="btn-text" style={{ marginLeft: '1rem', color: 'var(--accent)', fontSize: '0.8rem' }}>
+                             (Cambiar Usuario)
+                        </button>
+                    </p>
+                    <p className="subtitle" style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>Tu progreso: {completedTests.length} de {testList.length} encuestas listas.</p>
                 </div>
 
                 <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
@@ -92,7 +178,7 @@ export default function DashboardEstudiante() {
                     >
                         <AlertCircle size={18} /> ¿Cómo completar?
                     </button>
-                    <div className="stats-glass">
+                    <div className="stats-glass" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                         <div className="stat">
                             <span className="stat-val text-gradient">{progressPercentage}%</span>
                             <span className="stat-label">Progreso</span>
@@ -102,10 +188,18 @@ export default function DashboardEstudiante() {
                             <span className="stat-label">Completados</span>
                         </div>
                     </div>
+                    <button 
+                        onClick={() => navigate('/ayuda')} 
+                        className="glass-btn" 
+                        style={{ padding: '0.8rem', borderRadius: '50%', width: '45px', height: '45px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--primary-glow)', background: 'rgba(99, 102, 241, 0.1)' }}
+                        title="Manual de Ayuda"
+                    >
+                        <HelpCircle size={24} color="var(--primary)" />
+                    </button>
                 </div>
             </header>
 
-            <div className="progress-bar-container" style={{ margin: '-1.5rem 2.5rem 2rem 2.5rem', background: 'rgba(255,255,255,0.05)', height: '8px', borderRadius: '4px', overflow: 'hidden' }}>
+            <div className="progress-bar-container" style={{ margin: '1rem 0 2rem', background: 'rgba(255,255,255,0.05)', height: '10px', borderRadius: '5px', overflow: 'hidden' }}>
                 <motion.div 
                     initial={{ width: 0 }}
                     animate={{ width: `${progressPercentage}%` }}
@@ -113,130 +207,80 @@ export default function DashboardEstudiante() {
                 />
             </div>
 
-            {/* MODAL DE INSTRUCCIONES ALUMNO */}
-            <AnimatePresence>
-                {showInstructions && (
-                    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 3000, background: 'rgba(3, 7, 18, 0.9)', backdropFilter: 'blur(12px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-                        <motion.div 
-                            initial={{ scale: 0.9, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.9, opacity: 0 }}
-                            className="glass-panel"
-                            style={{ maxWidth: '600px', width: '100%', padding: '2.5rem', position: 'relative', border: '1.5px solid var(--primary)' }}
-                        >
-                            <button onClick={() => setShowInstructions(false)} style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'rgba(255,255,255,0.05)', border: 'none', color: 'white', cursor: 'pointer', borderRadius: '50%', width: '35px', height: '35px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={20} /></button>
-                            
-                            <h2 style={{ fontSize: '1.8rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}><Sparkles className="text-gradient" size={30} /> Tu Espacio de Apoyo</h2>
-                            
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1.2rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                    <h3 style={{ fontSize: '1.1rem', color: 'var(--primary)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Lightbulb size={18} /> ¿Por qué hacemos esto?</h3>
-                                    <p style={{ fontSize: '0.9rem', lineHeight: 1.5, color: 'var(--text-muted)' }}>
-                                        Estas encuestas nos ayudan a conocer mejor cómo aprendes y cómo te sientes en el CEIA. Tus respuestas nos permiten crear talleres y apoyos pensados especialmente para ti. Tu opinión es fundamental.
-                                    </p>
-                                </div>
-
-                                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1.2rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                    <h3 style={{ fontSize: '1.1rem', color: 'var(--secondary)', marginBottom: '0.5rem' }}>Consejos para llenar</h3>
-                                    <ul style={{ fontSize: '0.9rem', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', gap: '0.5rem', paddingLeft: '1.2rem' }}>
-                                        <li>No hay respuestas correctas ni incorrectas.</li>
-                                        <li>Sé lo más sincero posible; tus datos son confidenciales y solo los verá el equipo de apoyo.</li>
-                                        <li>Tómate tu tiempo para leer cada afirmación.</li>
-                                        <li>Si tienes dudas, ¡no dudes en preguntarnos!</li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <button onClick={() => setShowInstructions(false)} className="btn btn-primary" style={{ marginTop: '2.5rem', width: '100%', padding: '1.1rem', background: 'var(--gradient-primary)', fontWeight: 'bold' }}>¡Vale, empecemos!</button>
-                        </motion.div>
+            <div className="grid-layout">
+                {/* Diario Emocional */}
+                <section className="glass-panel module-card">
+                    <div className="card-header">
+                        <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Smile size={20} color="var(--secondary)" /> Diario de Emociones</h3>
                     </div>
-                )}
-            </AnimatePresence>
+                    <div className="emotions-grid">
+                        {emotions.map((emotion) => {
+                            const Icon = emotion.icon;
+                            const isSelected = selectedEmotion === emotion.id;
+                            return (
+                                <motion.button
+                                    key={emotion.id}
+                                    whileHover={{ scale: 1.05 }}
+                                    onClick={() => setSelectedEmotion(emotion.id)}
+                                    className={`emotion-btn ${isSelected ? 'selected' : ''}`}
+                                    style={{
+                                        borderColor: isSelected ? emotion.color : 'var(--border-color)',
+                                        background: isSelected ? `${emotion.color}15` : 'transparent'
+                                    }}
+                                >
+                                    <Icon size={24} color={emotion.color} />
+                                    <span>{emotion.label}</span>
+                                </motion.button>
+                            );
+                        })}
+                    </div>
+                </section>
 
-            <div className="grid-layout" style={{ padding: '0 2.5rem' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-                    
-                    {/* Diario Emocional */}
-                    <section className="glass-panel module-card">
-                        <div className="card-header">
-                            <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Smile size={20} color="var(--secondary)" /> Diario de Emociones</h3>
-                            <span className="badge-new">Rápido</span>
-                        </div>
-                        <p className="card-desc">Selecciona la emoción que más resuena contigo hoy.</p>
+                {/* Grid de Encuestas */}
+                <section className="glass-panel module-card">
+                    <div className="card-header">
+                        <h3><BookOpen size={20} color="var(--primary)" /> Encuestas Disponibles</h3>
+                    </div>
+                    <p className="card-desc">Todas las encuestas están activas. Si ya completaste una, puedes repetirla.</p>
 
-                        <div className="emotions-grid">
-                            {emotions.map((emotion) => {
-                                const Icon = emotion.icon;
-                                const isSelected = selectedEmotion === emotion.id;
-
-                                return (
-                                    <motion.button
-                                        key={emotion.id}
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                        onClick={() => setSelectedEmotion(emotion.id)}
-                                        className={`emotion-btn ${isSelected ? 'selected' : ''}`}
-                                        style={{
-                                            borderColor: isSelected ? emotion.color : 'var(--border-color)',
-                                            background: isSelected ? `${emotion.color}15` : 'transparent',
-                                            padding: '1rem', borderRadius: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', border: '1px solid var(--border-color)', transition: 'all 0.3s'
+                    <div className="tests-container-grid">
+                        {testList.map((test, index) => {
+                            const Icon = test.icon;
+                            const isDone = completedTests.includes(test.id);
+                            return (
+                                <motion.div
+                                    key={test.id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.1 }}
+                                    className={`test-card-item ${isDone ? 'is-completed' : ''}`}
+                                    style={{ 
+                                        position: 'relative', 
+                                        zIndex: 1, 
+                                        border: isDone ? '1px solid var(--secondary)' : '1px solid var(--border-color)' 
+                                    }}
+                                >
+                                    <div className="test-card-header">
+                                        <h4>{test.title}</h4>
+                                        <Icon size={22} color={isDone ? 'var(--secondary)' : 'var(--primary)'} />
+                                    </div>
+                                    <p>{test.desc}</p>
+                                    <button 
+                                        className={`btn ${isDone ? 'btn-secondary' : 'btn-primary'}`}
+                                        onClick={() => handleStartTestSequence(test.id)}
+                                        style={{ 
+                                            width: '100%', 
+                                            cursor: 'pointer',
+                                            boxShadow: !isDone ? '0 10px 20px rgba(99, 102, 241, 0.2)' : 'none'
                                         }}
                                     >
-                                        <Icon size={28} color={emotion.color} />
-                                        <span style={{ color: isSelected ? emotion.color : 'var(--text-muted)', fontSize: '0.9rem', fontWeight: isSelected ? 'bold' : 'normal' }}>
-                                            {emotion.label}
-                                        </span>
-                                    </motion.button>
-                                )
-                            })}
-                        </div>
-                    </section>
-
-                    <section className="glass-panel module-card">
-                        <div className="card-header">
-                            <h3><BookOpen size={20} color="var(--primary)" /> Encuestas Psicosociales</h3>
-                        </div>
-                        <p className="card-desc" style={{ marginBottom: '1.5rem' }}>Completa estos instrumentos para que tus clases se adapten a tu forma de ser.</p>
-
-                        <div className="tests-container-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
-                            {[
-                                { id: 'chaea', title: 'Estilos de Aprendizaje', desc: 'Identifica cómo prefieres aprender.', icon: Sparkles },
-                                { id: 'socioemocional', title: 'Adaptación Socioemocional', desc: 'Tu bienestar y autoconocimiento.', icon: ShieldAlert },
-                                { id: 'motivacion', title: 'Motivación Educativa', desc: '¿Qué te impulsa a estudiar?', icon: Compass },
-                                { id: 'autoeficacia', title: 'Autoeficacia Académica', desc: 'Confianza en tus capacidades.', icon: BrainCircuit },
-                                { id: 'clima', title: 'Clima y Seguridad', desc: 'Tu percepción de la jornada nocturna.', icon: Award },
-                                { id: 'participacion', title: 'Participación Ciudadana', desc: 'Tu interés e involucramiento en la comunidad educativa.', icon: Globe },
-                                { id: 'dcsej', title: 'Desafío Grupal (Historia)', desc: 'Resuelve situaciones de convivencia.', icon: ChevronRight }
-                            ].map((test, index) => {
-                                const Icon = test.icon;
-                                const isDone = completedTests.includes(test.id);
-                                return (
-                                    <motion.div
-                                        key={test.id}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: index * 0.1 }}
-                                        className="test-card-item glass-panel"
-                                        style={{ padding: '1.5rem', border: isDone ? '1px solid var(--secondary)' : '1px solid rgba(255,255,255,0.05)', background: isDone ? 'rgba(16,185,129,0.05)' : 'rgba(255,255,255,0.02)' }}
-                                    >
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                                            <h4 style={{ margin: 0, fontSize: '1.1rem' }}>{test.title}</h4>
-                                            <Icon size={24} color={isDone ? 'var(--secondary)' : 'var(--text-muted)'} />
-                                        </div>
-                                        <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1.5rem', minHeight: '3rem' }}>{test.desc}</p>
-                                        <button 
-                                            className={`btn ${isDone ? 'btn-secondary' : 'btn-primary'}`}
-                                            onClick={() => handleStartTestSequence(test.id)}
-                                            style={{ width: '100%', opacity: isDone ? 0.8 : 1 }}
-                                        >
-                                            {isDone ? 'Repetir Test' : 'Iniciar'}
-                                        </button>
-                                    </motion.div>
-                                );
-                            })}
-                        </div>
-                    </section>
-                </div>
+                                        {isDone ? 'Repetir Test' : 'Iniciar Encuesta'}
+                                    </button>
+                                </motion.div>
+                            );
+                        })}
+                    </div>
+                </section>
             </div>
         </motion.div>
     );
