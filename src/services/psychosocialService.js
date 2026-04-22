@@ -1,5 +1,5 @@
 import { db } from '../firebase/config';
-import { collection, addDoc, getDocs, query, orderBy, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
 
 const LOCAL_RESULTS_KEY = 'psicosocial_test_results_cache';
 
@@ -123,5 +123,25 @@ export const getTestResults = async () => {
     console.warn('Usando cache local por lentitud/error:', error.message);
     if (localResults.length > 0) return localResults;
     return mockResults;
+  }
+};
+
+export const deleteAllTestResults = async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, 'testResults'));
+    const total = querySnapshot.size;
+    let count = 0;
+    for (const docSnap of querySnapshot.docs) {
+      await deleteDoc(doc(db, 'testResults', docSnap.id));
+      count++;
+    }
+    // Limpiar cache local
+    localStorage.removeItem(LOCAL_RESULTS_KEY);
+    return { success: true, deleted: count, total };
+  } catch (error) {
+    console.error('Error al eliminar datos:', error);
+    // Al menos limpiar local
+    localStorage.removeItem(LOCAL_RESULTS_KEY);
+    return { success: false, error: error.message };
   }
 };

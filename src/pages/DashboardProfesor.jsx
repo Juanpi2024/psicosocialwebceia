@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { ShieldAlert, BarChart3, Users, Award, FileText, Loader2, BookOpen, BrainCircuit, X, AlertTriangle, Lightbulb, Sparkles } from 'lucide-react';
+import { ShieldAlert, BarChart3, Users, Award, FileText, Loader2, BookOpen, BrainCircuit, X, AlertTriangle, Lightbulb, Sparkles, Trash2 } from 'lucide-react';
 import {
     Chart as ChartJS,
     RadialLinearScale,
@@ -13,7 +13,7 @@ import {
 } from 'chart.js';
 import { Radar } from 'react-chartjs-2';
 import './DashboardProfesor.css';
-import { getTestResults } from '../services/psychosocialService';
+import { getTestResults, deleteAllTestResults } from '../services/psychosocialService';
 // Data imports removed - using dynamic scoring from results
 import { analyzePsychosocialData, analyzeStudentData } from '../services/openaiService';
 import logoCeia from '../assets/logo_ceia.png';
@@ -85,6 +85,8 @@ export default function DashboardProfesor() {
     const [showAiConfig, setShowAiConfig] = useState(false);
     const [studentAiAnalysis, setStudentAiAnalysis] = useState(null);
     const [studentAiLoading, setStudentAiLoading] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [deleteStep, setDeleteStep] = useState(0); // 0=hidden, 1=first confirm, 2=deleting
     const navigate = useNavigate();
 
     const fetchResults = async () => {
@@ -303,8 +305,88 @@ export default function DashboardProfesor() {
                         <span className="kpi-label">Alumnos Evaluados</span>
                     </div>
                     <button onClick={() => window.print()} className="btn btn-primary" style={{ height: 'auto', padding: '0 1.5rem' }}><FileText size={18} /> Exportar Curso</button>
+                    <button onClick={() => { setShowDeleteConfirm(true); setDeleteStep(1); }} className="btn" style={{ height: 'auto', padding: '0 1rem', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', borderRadius: '12px' }} title="Eliminar todos los datos"><Trash2 size={18} /> Limpiar BD</button>
                 </div>
             </header>
+
+            {/* Modal de confirmación de eliminación */}
+            <AnimatePresence>
+                {showDeleteConfirm && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 10000, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        onClick={() => { if (deleteStep !== 2) { setShowDeleteConfirm(false); setDeleteStep(0); } }}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.9, y: 20 }}
+                            onClick={(e) => e.stopPropagation()}
+                            style={{ maxWidth: '450px', width: '90%', background: 'rgba(17, 24, 39, 0.95)', borderRadius: '24px', border: '2px solid rgba(239, 68, 68, 0.4)', padding: '2.5rem', textAlign: 'center' }}
+                        >
+                            {deleteStep === 1 && (
+                                <>
+                                    <Trash2 size={48} color="#ef4444" style={{ marginBottom: '1.5rem' }} />
+                                    <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>¿Eliminar TODOS los datos?</h3>
+                                    <p style={{ color: 'rgba(255,255,255,0.6)', marginBottom: '2rem', lineHeight: 1.6 }}>
+                                        Esta acción eliminará <strong style={{ color: '#ef4444' }}>{(results || []).length} registros</strong> de Firestore y el cache local. <br/>Esta acción es <strong>irreversible</strong>.
+                                    </p>
+                                    <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+                                        <button onClick={() => { setShowDeleteConfirm(false); setDeleteStep(0); }} className="btn btn-secondary" style={{ padding: '0.8rem 2rem' }}>Cancelar</button>
+                                        <button onClick={() => setDeleteStep(2)} style={{ padding: '0.8rem 2rem', background: '#ef4444', color: 'white', border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', fontSize: '1rem' }}>Sí, eliminar todo</button>
+                                    </div>
+                                </>
+                            )}
+                            {deleteStep === 2 && (
+                                <>
+                                    <AlertTriangle size={48} color="#f59e0b" style={{ marginBottom: '1.5rem' }} />
+                                    <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem', color: '#f59e0b' }}>⚠️ Última confirmación</h3>
+                                    <p style={{ color: 'rgba(255,255,255,0.6)', marginBottom: '2rem' }}>Escribe <strong style={{ color: 'white' }}>ELIMINAR</strong> para confirmar:</p>
+                                    <input
+                                        id="delete-confirm-input"
+                                        type="text"
+                                        placeholder="Escribe ELIMINAR..."
+                                        style={{ width: '100%', padding: '1rem', background: 'rgba(0,0,0,0.4)', border: '2px solid rgba(239, 68, 68, 0.3)', borderRadius: '12px', color: 'white', fontSize: '1.1rem', textAlign: 'center', boxSizing: 'border-box', marginBottom: '1.5rem' }}
+                                        autoFocus
+                                    />
+                                    <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+                                        <button onClick={() => { setShowDeleteConfirm(false); setDeleteStep(0); }} className="btn btn-secondary" style={{ padding: '0.8rem 2rem' }}>Cancelar</button>
+                                        <button
+                                            onClick={async () => {
+                                                const input = document.getElementById('delete-confirm-input');
+                                                if (input?.value !== 'ELIMINAR') { input.style.borderColor = '#ef4444'; return; }
+                                                setDeleteStep(3);
+                                                const result = await deleteAllTestResults();
+                                                if (result.success) {
+                                                    setResults([]);
+                                                    setShowDeleteConfirm(false);
+                                                    setDeleteStep(0);
+                                                    alert(`✅ ${result.deleted} registros eliminados exitosamente.`);
+                                                } else {
+                                                    alert('❌ Error: ' + result.error);
+                                                    setDeleteStep(2);
+                                                }
+                                            }}
+                                            style={{ padding: '0.8rem 2rem', background: '#ef4444', color: 'white', border: 'none', borderRadius: '12px', fontWeight: 'bold', cursor: 'pointer', fontSize: '1rem' }}
+                                        >
+                                            Confirmar Eliminación
+                                        </button>
+                                    </div>
+                                </>
+                            )}
+                            {deleteStep === 3 && (
+                                <>
+                                    <Loader2 size={48} color="#ef4444" className="spin" style={{ marginBottom: '1.5rem' }} />
+                                    <h3 style={{ fontSize: '1.5rem' }}>Eliminando datos...</h3>
+                                    <p style={{ color: 'rgba(255,255,255,0.5)' }}>Por favor espera, no cierres esta ventana.</p>
+                                </>
+                            )}
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
 
             <main style={{ padding: '2.5rem' }}>
