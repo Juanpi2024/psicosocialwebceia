@@ -5,73 +5,55 @@ import {
     BookOpen, BrainCircuit, Sparkles, ShieldAlert, Users, 
     FileText, Lightbulb, ArrowLeft, Search, ChevronRight, 
     HeartHandshake, Compass, Award, BarChart3, HelpCircle,
-    Printer, Download, ExternalLink, MessageSquare
+    Printer, Download, ExternalLink, MessageSquare, Heart, Shield, Globe
 } from 'lucide-react';
-import './LandingPage.css'; // Reutilizamos estilos globales de landing si existen o usamos inline
+import './LandingPage.css';
 
 const INSTRUMENTS_INFO = [
     {
-        id: 'chaea',
-        title: 'CHAEA (Estilos de Aprendizaje)',
-        icon: BrainCircuit,
-        color: '#6366f1',
-        description: 'Cuestionario de Honey y Alonso. Evalúa cómo procesamos la información.',
-        utility: 'Permite personalizar la enseñanza según el perfil (Activo, Reflexivo, Teórico, Pragmático).',
-        target: 'Estudiantes'
-    },
-    {
-        id: 'socioemocional',
-        title: 'DIA Socioemocional',
-        icon: HeartHandshake,
-        color: '#ec4899',
-        description: 'Mide bienestar emocional, autoconocimiento y gestión del estrés.',
-        utility: 'Detecta estudiantes que requieren apoyo inmediato de convivencia escolar.',
-        target: 'Estudiantes'
-    },
-    {
-        id: 'motivacion',
-        title: 'Motivación Educativa',
-        icon: Compass,
-        color: '#f59e0b',
-        description: 'Identifica los disparadores del compromiso escolar en adultos.',
-        utility: 'Clave para planes de retención y prevención de deserción.',
-        target: 'Estudiantes'
-    },
-    {
-        id: 'autoeficacia',
-        title: 'Autoeficacia Académica',
-        icon: Award,
-        color: '#10b981',
-        description: 'Nivel de confianza en las propias capacidades académicas.',
-        utility: 'Ayuda a reconstruir la seguridad de alumnos que tuvieron fracasos previos.',
-        target: 'Estudiantes'
-    },
-    {
-        id: 'clima',
-        title: 'Clima y Seguridad',
-        icon: ShieldAlert,
-        color: '#ef4444',
-        description: 'Percepción de seguridad en la jornada nocturna y convivencia.',
-        utility: 'Mejora la seguridad institucional detectando zonas de conflicto.',
-        target: 'Estudiantes'
-    },
-    {
-        id: 'dcsej',
-        title: 'DCSE-J (Convivencia)',
-        icon: Users,
-        color: '#8b5cf6',
-        description: 'Test interactivo de juicio moral ante dilemas de justicia.',
-        utility: 'Analiza pautas de resolución de conflictos y empatía social.',
-        target: 'Estudiantes'
-    },
-    {
-        id: 'res-f',
-        title: 'RES-F (Resiliencia Familiar)',
-        icon: BarChart3,
+        id: 'participacion',
+        title: 'Participación Ciudadana',
+        icon: Globe,
         color: '#3b82f6',
-        description: 'Módulo de participación para familias sobre soporte en el hogar.',
-        utility: 'Integra al núcleo familiar en el proceso preventivo.',
-        target: 'Familias'
+        description: 'Evalúa el interés e involucramiento del estudiante en la comunidad educativa y su formación como ciudadano activo.',
+        utility: 'Mide indicadores clave del convenio de desempeño directivo relacionados con la formación ciudadana y participación escolar.',
+        target: 'Estudiantes'
+    },
+    {
+        id: 'clima_convivencia',
+        title: 'Clima y Convivencia Escolar',
+        icon: Shield,
+        color: '#ef4444',
+        description: 'Percepción de seguridad, respeto y convivencia en el entorno escolar CEIA, incluyendo aspectos de la jornada vespertina/nocturna.',
+        utility: 'Identifica factores de riesgo institucional y permite al equipo de convivencia actuar preventivamente.',
+        target: 'Estudiantes'
+    },
+    {
+        id: 'autoestima_motivacion',
+        title: 'Autoestima y Motivación Escolar',
+        icon: BrainCircuit,
+        color: '#ec4899',
+        description: 'Fusión de autoconcepto, autorregulación emocional y motivación (intrínseca, extrínseca y riesgo de desmotivación).',
+        utility: 'Detecta estudiantes con baja autoestima o en riesgo de deserción, permitiendo intervención temprana con metas a corto plazo.',
+        target: 'Estudiantes'
+    },
+    {
+        id: 'afectividad_genero',
+        title: 'Afectividad, Sexualidad y Género',
+        icon: Heart,
+        color: '#a855f7',
+        description: 'Evalúa autoconocimiento afectivo, relaciones saludables, perspectiva de género, autocuidado en salud sexual y derechos.',
+        utility: 'Permite planificar talleres de educación integral en sexualidad alineados con las orientaciones del Mineduc (2017).',
+        target: 'Estudiantes'
+    },
+    {
+        id: 'chaea',
+        title: 'Estilos de Aprendizaje (CHAEA)',
+        icon: Sparkles,
+        color: '#6366f1',
+        description: 'Cuestionario Honey-Alonso. Identifica si el alumno es Activo, Reflexivo, Teórico o Pragmático.',
+        utility: 'Permite al docente adaptar su didáctica para que el aprendizaje sea más efectivo según el perfil predominante.',
+        target: 'Estudiantes'
     }
 ];
 

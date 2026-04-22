@@ -3,72 +3,55 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
     BookOpen, BrainCircuit, Sparkles, ShieldAlert, Users, 
     FileText, Lightbulb, X, Search, ChevronRight, 
-    HeartHandshake, Compass, Award, BarChart3, HelpCircle
+    HeartHandshake, Compass, Award, BarChart3, HelpCircle,
+    Heart, Shield, Globe
 } from 'lucide-react';
 
 const INSTRUMENTS_INFO = [
     {
-        id: 'chaea',
-        title: 'CHAEA (Estilos de Aprendizaje)',
-        icon: BrainCircuit,
-        color: '#6366f1',
-        description: 'Basado en el Cuestionario Honey-Alonso. Identifica si el alumno es Activo, Reflexivo, Teórico o Pragmático.',
-        utility: 'Permite al docente adaptar su didáctica para que el aprendizaje sea más efectivo según el perfil predominante.',
-        target: 'Estudiantes'
-    },
-    {
-        id: 'socioemocional',
-        title: 'DIA Socioemocional',
-        icon: HeartHandshake,
-        color: '#ec4899',
-        description: 'Evaluación de bienestar emocional y recursos personales. Detecta niveles de ansiedad, calma y red de apoyo.',
-        utility: 'Vital para identificar estudiantes en riesgo socioemocional y activar protocolos de acompañamiento urgente.',
-        target: 'Estudiantes'
-    },
-    {
-        id: 'motivacion',
-        title: 'Motivación Educativa',
-        icon: Compass,
-        color: '#f59e0b',
-        description: 'Mide qué impulsa al estudiante adulto a volver a las aulas: metas intrínsecas, extrínsecas o amotivación.',
-        utility: 'Ayuda a prevenir la deserción escolar al entender los pilares que mantienen al alumno en el sistema.',
-        target: 'Estudiantes'
-    },
-    {
-        id: 'autoeficacia',
-        title: 'Autoeficacia Académica',
-        icon: Award,
-        color: '#10b981',
-        description: 'Evalúa la confianza del estudiante en sus propias capacidades para enfrentar desafíos educativos.',
-        utility: 'Fundamental en educación de adultos para trabajar la autoestima académica dañada por fracasos previos.',
-        target: 'Estudiantes'
-    },
-    {
-        id: 'clima',
-        title: 'Clima y Seguridad',
-        icon: ShieldAlert,
-        color: '#ef4444',
-        description: 'Percepción de seguridad en el entorno escolar, especialmente enfocado en la jornada nocturna y convivencia.',
-        utility: 'Identifica zonas de peligro o conflictos de convivencia que afectan el rendimiento grupal.',
-        target: 'Estudiantes'
-    },
-    {
-        id: 'dcsej',
-        title: 'DCSE-J (Convivencia)',
-        icon: Users,
-        color: '#8b5cf6',
-        description: 'Test situacional mediante historias interactivas para evaluar juicio moral y resolución de conflictos.',
-        utility: 'Permite observar cómo reacciona el alumno ante situaciones de injusticia o dilemas éticos.',
-        target: 'Estudiantes'
-    },
-    {
-        id: 'res-f',
-        title: 'RES-F (Resiliencia Familiar)',
-        icon: BarChart3,
+        id: 'participacion',
+        title: 'Participación Ciudadana',
+        icon: Globe,
         color: '#3b82f6',
-        description: 'Evaluación para familias/apoderados sobre los factores protectores presentes en el hogar.',
-        utility: 'Completa el panorama psicosocial integrando la visión del entorno cercano del estudiante.',
-        target: 'Familias'
+        description: 'Evalúa el interés e involucramiento del estudiante en la comunidad educativa y su formación como ciudadano activo.',
+        utility: 'Mide indicadores clave del convenio de desempeño directivo relacionados con la formación ciudadana.',
+        target: 'Estudiantes'
+    },
+    {
+        id: 'clima_convivencia',
+        title: 'Clima y Convivencia Escolar',
+        icon: Shield,
+        color: '#ef4444',
+        description: 'Percepción de seguridad, respeto y convivencia en el CEIA, incluyendo jornada vespertina/nocturna.',
+        utility: 'Identifica factores de riesgo institucional para que el equipo de convivencia actúe preventivamente.',
+        target: 'Estudiantes'
+    },
+    {
+        id: 'autoestima_motivacion',
+        title: 'Autoestima y Motivación Escolar',
+        icon: BrainCircuit,
+        color: '#ec4899',
+        description: 'Fusión de autoconcepto, autorregulación emocional y motivación (intrínseca, extrínseca y riesgo de desmotivación).',
+        utility: 'Detecta baja autoestima o riesgo de deserción, permitiendo intervención temprana.',
+        target: 'Estudiantes'
+    },
+    {
+        id: 'afectividad_genero',
+        title: 'Afectividad, Sexualidad y Género',
+        icon: Heart,
+        color: '#a855f7',
+        description: 'Autoconocimiento afectivo, relaciones saludables, perspectiva de género, autocuidado y derechos.',
+        utility: 'Permite planificar talleres de educación integral en sexualidad según orientaciones Mineduc.',
+        target: 'Estudiantes'
+    },
+    {
+        id: 'chaea',
+        title: 'Estilos de Aprendizaje (CHAEA)',
+        icon: Sparkles,
+        color: '#6366f1',
+        description: 'Cuestionario Honey-Alonso. Identifica si el alumno es Activo, Reflexivo, Teórico o Pragmático.',
+        utility: 'Permite al docente adaptar su didáctica según el perfil predominante del estudiante.',
+        target: 'Estudiantes'
     }
 ];
 
@@ -225,7 +208,7 @@ export default function ManualAyuda({ isOpen, onClose }) {
                                             <h4 style={{ marginBottom: '1rem', color: 'var(--primary)' }}>Estudiante</h4>
                                             <ul style={{ fontSize: '0.85rem', paddingLeft: '1.2rem', opacity: 0.7, lineHeight: 1.8 }}>
                                                 <li>Registro emocional diario.</li>
-                                                <li>Realización de 6 encuestas.</li>
+                                                <li>Realización de 5 encuestas.</li>
                                                 <li>Seguimiento de progreso personal.</li>
                                             </ul>
                                         </div>
@@ -239,11 +222,13 @@ export default function ManualAyuda({ isOpen, onClose }) {
                                             </ul>
                                         </div>
                                         <div style={{ background: 'rgba(255,255,255,0.02)', padding: '1.5rem', borderRadius: '16px' }}>
-                                            <h4 style={{ marginBottom: '1rem', color: 'var(--accent)' }}>Familias</h4>
+                                            <h4 style={{ marginBottom: '1rem', color: 'var(--accent)' }}>Encuestas</h4>
                                             <ul style={{ fontSize: '0.85rem', paddingLeft: '1.2rem', opacity: 0.7, lineHeight: 1.8 }}>
-                                                <li>Casos de resiliencia familiar.</li>
-                                                <li>Historias interactivas (RES-F).</li>
-                                                <li>Comunicación colegio-hogar.</li>
+                                                <li>Participación Ciudadana.</li>
+                                                <li>Clima y Convivencia Escolar.</li>
+                                                <li>Autoestima y Motivación.</li>
+                                                <li>Afectividad, Sexualidad y Género.</li>
+                                                <li>Estilos de Aprendizaje (CHAEA).</li>
                                             </ul>
                                         </div>
                                     </div>

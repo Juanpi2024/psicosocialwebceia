@@ -144,10 +144,12 @@ export default function DashboardEstudiante() {
         { id: 'clima_convivencia', title: 'Clima y Convivencia Escolar', desc: 'Tu percepción del ambiente y la convivencia en el CEIA.', icon: Shield },
         { id: 'autoestima_motivacion', title: 'Autoestima y Motivación Escolar', desc: 'Tu bienestar personal y lo que te impulsa a estudiar.', icon: BrainCircuit },
         { id: 'afectividad_genero', title: 'Afectividad, Sexualidad y Género', desc: 'Autoconocimiento, relaciones saludables y derechos.', icon: Heart },
-        { id: 'chaea', title: 'Estilos de Aprendizaje (CHAEA)', desc: 'Identifica cómo prefieres aprender.', icon: Sparkles, extra: true }
+        { id: 'chaea', title: 'Estilos de Aprendizaje (CHAEA)', desc: 'Identifica cómo prefieres aprender (opcional).', icon: Sparkles, extra: true }
     ];
 
-    const progressPercentage = Math.round((completedTests.length / testList.length) * 100);
+    const mandatoryTests = testList.filter(t => !t.extra);
+    const completedMandatory = mandatoryTests.filter(t => completedTests.includes(t.id));
+    const progressPercentage = Math.round((completedMandatory.length / mandatoryTests.length) * 100);
 
     return (
         <motion.div
@@ -165,7 +167,7 @@ export default function DashboardEstudiante() {
                              (Cambiar Usuario)
                         </button>
                     </p>
-                    <p className="subtitle" style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>Tu progreso: {completedTests.length} de {testList.length} encuestas listas.</p>
+                    <p className="subtitle" style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>Tu progreso: {completedMandatory.length} de {mandatoryTests.length} encuestas obligatorias listas.</p>
                 </div>
 
                 <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
@@ -182,8 +184,8 @@ export default function DashboardEstudiante() {
                             <span className="stat-label">Progreso</span>
                         </div>
                         <div className="stat">
-                            <span className="stat-val text-gradient">{completedTests.length}/{testList.length}</span>
-                            <span className="stat-label">Completados</span>
+                            <span className="stat-val text-gradient">{completedMandatory.length}/{mandatoryTests.length}</span>
+                            <span className="stat-label">Obligatorias</span>
                         </div>
                     </div>
                     <button 
