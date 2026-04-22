@@ -14,19 +14,18 @@ import {
 import { Radar } from 'react-chartjs-2';
 import './DashboardProfesor.css';
 import { getTestResults } from '../services/psychosocialService';
-import { socioemocionalQuestions } from '../data/socioemocionalData';
+// Data imports removed - using dynamic scoring from results
 import { analyzePsychosocialData, analyzeStudentData } from '../services/openaiService';
 import logoCeia from '../assets/logo_ceia.png';
 
-const ALL_SURVEY_IDS = ['chaea', 'socioemocional', 'motivacion', 'autoeficacia', 'clima', 'dcsej'];
+const ALL_SURVEY_IDS = ['participacion', 'clima_convivencia', 'autoestima_motivacion', 'afectividad_genero', 'chaea'];
 
 const SURVEY_LABELS = {
-    chaea: 'Estilos de Aprendizaje (CHAEA)',
-    socioemocional: 'DIA Socioemocional',
-    motivacion: 'Motivación Escolar',
-    autoeficacia: 'Autoeficacia Académica',
-    clima: 'Clima de Aula',
-    dcsej: 'Convivencia y Justicia (DCSEJ)'
+    participacion: 'Participación Ciudadana',
+    clima_convivencia: 'Clima y Convivencia Escolar',
+    autoestima_motivacion: 'Autoestima y Motivación Escolar',
+    afectividad_genero: 'Afectividad, Sexualidad y Género',
+    chaea: 'Estilos de Aprendizaje (CHAEA)'
 };
 
 const COURSES = [
@@ -50,14 +49,17 @@ const REPORT_TEMPLATES = {
         'REFLEXIVO/PRAGMÁTICO': "Perfil mixto Reflexivo-Pragmático. Combina análisis profundo con orientación a la acción. Potenciar con estudios de caso y resolución de problemas reales.",
         'ACTIVO/PRAGMÁTICO': "Perfil mixto Activo-Pragmático. Aprende haciendo y busca resultados tangibles. Ideal para proyectos prácticos con impacto directo.",
     },
-    socioemocional: {
-        low: "ALERTA: Perfil descendido en adaptación socioemocional. Se detectan indicadores de riesgo en gestión emocional o interacción social. Se recomienda derivación a equipo de convivencia escolar y seguimiento semanal individualizado.",
-        high: "Perfil saludable en adaptación socioemocional. El estudiante muestra recursos adecuados de regulación emocional y habilidades sociales. Continuar monitoreo preventivo semestral.",
+    autoestima_motivacion: {
+        risk: "ALERTA: Perfil de riesgo en autoestima o motivación. Se detectan indicadores de desmotivación o baja autopercepción. Se recomienda entrevista personal, identificación de barreras y plan de re-enganche con metas a corto plazo.",
+        healthy: "Perfil adecuado en autoestima y motivación. El estudiante muestra recursos de autoconfianza y metas claras. Continuar con refuerzo positivo y seguimiento semestral.",
     },
-    motivacion: {
-        intrinsica: "Predomina la motivación intrínseca. El estudiante muestra interés genuino por aprender y superarse. Reforzar con desafíos progresivos y reconocimiento de logros personales.",
-        extrinsica: "Predomina la motivación extrínseca. El estudiante responde a incentivos externos (notas, reconocimiento). Se sugiere gradualmente vincular el aprendizaje con metas personales significativas.",
-        amotivacion: "ALERTA CRÍTICA: Nivel alto de amotivación detectado. El estudiante no percibe valor en las actividades académicas. Requiere intervención urgente: entrevista personal, identificación de barreras y plan de re-enganche con metas a corto plazo.",
+    clima_convivencia: {
+        vulnerable: "ALERTA: Percepción de clima escolar descendido. El estudiante podría sentirse inseguro o poco acogido. Se recomienda abordaje con equipo de convivencia para identificar factores de riesgo institucional.",
+        positive: "Clima percibido como positivo. El estudiante se siente acogido y seguro en el CEIA. Mantener y reforzar las buenas prácticas de convivencia.",
+    },
+    afectividad_genero: {
+        low: "ALERTA: Bajo conocimiento en afectividad, sexualidad y género. Se recomienda reforzar contenidos de educación integral en sexualidad y derivar a talleres de formación ciudadana.",
+        adequate: "Nivel adecuado de conocimiento en la temática. El estudiante demuestra comprensión de derechos, vínculos saludables y autocuidado.",
     }
 };
 
@@ -113,8 +115,7 @@ export default function DashboardProfesor() {
     const filteredResults = selectedCourse === 'Todos' ? (results || []) : (results || []).filter(r => r?.curso === selectedCourse);
 
     const chaeaResults = (filteredResults || []).filter(r => r?.testId === 'chaea');
-    const socioResults = (filteredResults || []).filter(r => r?.testId === 'socioemocional');
-    const motivacionResults = (filteredResults || []).filter(r => r?.testId === 'motivacion');
+    const autoestResults = (filteredResults || []).filter(r => r?.testId === 'autoestima_motivacion');
 
     // Agrupar resultados por estudiante
     const groupedStudents = (filteredResults || []).reduce((acc, current) => {
@@ -160,24 +161,24 @@ export default function DashboardProfesor() {
         }],
     };
 
-    // Promedios Socioemocional
-    let avgSocio = { GestionEmocional: 0, PercepcionAprendizaje: 0, InteraccionSocial: 0 };
-    if (socioResults.length > 0) {
-        socioResults.forEach(r => {
-            avgSocio.GestionEmocional += r.scores?.GestionEmocional || 0;
-            avgSocio.PercepcionAprendizaje += r.scores?.PercepcionAprendizaje || 0;
-            avgSocio.InteraccionSocial += r.scores?.InteraccionSocial || 0;
+    // Promedios Autoestima y Motivación
+    let avgAutoest = { Autoestima: 0, Autorregulacion: 0, 'Motivacion Intrinseca': 0, 'Motivacion Extrinseca': 0, Riesgo: 0 };
+    if (autoestResults.length > 0) {
+        autoestResults.forEach(r => {
+            avgAutoest.Autoestima += r.scores?.Autoestima || 0;
+            avgAutoest.Autorregulacion += r.scores?.Autorregulacion || 0;
+            avgAutoest['Motivacion Intrinseca'] += r.scores?.['Motivacion Intrinseca'] || 0;
+            avgAutoest['Motivacion Extrinseca'] += r.scores?.['Motivacion Extrinseca'] || 0;
+            avgAutoest.Riesgo += r.scores?.Riesgo || 0;
         });
-        avgSocio.GestionEmocional /= socioResults.length;
-        avgSocio.PercepcionAprendizaje /= socioResults.length;
-        avgSocio.InteraccionSocial /= socioResults.length;
+        Object.keys(avgAutoest).forEach(k => avgAutoest[k] /= autoestResults.length);
     }
 
-    const socioChartData = {
-        labels: ['Gestión Emocional', 'Percepción del Aprendizaje', 'Interacción Social'],
+    const autoestChartData = {
+        labels: ['Autoestima', 'Autorregulación', 'Motiv. Intrínseca', 'Motiv. Extrínseca', 'Riesgo'],
         datasets: [{
-            label: `Promedio Socioemocional (${selectedCourse})`,
-            data: [avgSocio.GestionEmocional, avgSocio.PercepcionAprendizaje, avgSocio.InteraccionSocial],
+            label: `Promedio Autoestima/Motivación (${selectedCourse})`,
+            data: [avgAutoest.Autoestima, avgAutoest.Autorregulacion, avgAutoest['Motivacion Intrinseca'], avgAutoest['Motivacion Extrinseca'], avgAutoest.Riesgo],
             backgroundColor: 'rgba(236, 72, 153, 0.2)',
             borderColor: 'rgba(236, 72, 153, 1)',
             borderWidth: 2,
@@ -198,13 +199,18 @@ export default function DashboardProfesor() {
         maintainAspectRatio: false
     };
 
-    const requiresSupport = socioResults.filter(r => r.profile === 'Requiere Apoyo');
+    const requiresSupport = (filteredResults || []).filter(r => 
+        r?.profile?.includes('Riesgo') || 
+        r?.profile?.includes('Baja') || 
+        r?.profile?.includes('Vulnerable') ||
+        r?.profile?.includes('Requiere')
+    );
     
     const allCriticalAlerts = (filteredResults || []).filter(r => 
-        r?.profile?.includes('Requiere Apoyo') || 
-        r?.profile?.includes('Bajo') || 
-        r?.profile?.includes('Crítica') ||
-        (r?.testId === 'socioemocional' && r?.profile === 'Requiere Apoyo')
+        r?.profile?.includes('Riesgo') || 
+        r?.profile?.includes('Baja') || 
+        r?.profile?.includes('Vulnerable') ||
+        r?.profile?.includes('Requiere')
     ).map(r => ({
         ...r,
         studentData: groupedStudents[r?.studentId || 'unknown']
@@ -314,9 +320,9 @@ export default function DashboardProfesor() {
                                 </section>
 
                                 <section className="glass-panel" style={{ padding: '2rem' }}>
-                                    <h3 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><BrainCircuit size={20} color="var(--accent)" /> Adaptación Socioemocional (DIA)</h3>
+                                    <h3 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><BrainCircuit size={20} color="var(--accent)" /> Autoestima y Motivación</h3>
                                     <div style={{ height: '300px' }}>
-                                        <Radar data={socioChartData} options={radarOptions} />
+                                        <Radar data={autoestChartData} options={radarOptions} />
                                     </div>
                                 </section>
                                 <section className="glass-panel" style={{ padding: '2rem' }}>
@@ -343,7 +349,7 @@ export default function DashboardProfesor() {
                                     {requiresSupport.map((r, i) => (
                                         <div key={i} onClick={() => setSelectedStudent(groupedStudents[r.studentId])} style={{ padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '12px', border: '1px solid rgba(239, 68, 68, 0.2)', cursor: 'pointer' }}>
                                             <div style={{ fontWeight: 'bold' }}>{r.studentName}</div>
-                                            <div style={{ fontSize: '0.8rem' }}>Socioemocional: Requiere Apoyo</div>
+                                            <div style={{ fontSize: '0.8rem' }}>{SURVEY_LABELS[r.testId] || r.testId}: {r.profile}</div>
                                         </div>
                                     ))}
                                     {requiresSupport.length === 0 && <p style={{ color: 'var(--text-muted)' }}>No hay alertas críticas en este curso.</p>}
@@ -507,36 +513,27 @@ export default function DashboardProfesor() {
                                                             REPORT_TEMPLATES.chaea[test.profile.toUpperCase()] || 
                                                             "Alumno con perfil versátil. Se recomienda variar las metodologías de enseñanza para cubrir todas las dimensiones."
                                                         )}
-                                                        {test.testId === 'socioemocional' && (
-                                                            test.scores?.GestionEmocional < 3 || test.scores?.Resiliencia < 3 ? 
-                                                            REPORT_TEMPLATES.socioemocional.low : REPORT_TEMPLATES.socioemocional.high
+                                                        {test.testId === 'autoestima_motivacion' && (
+                                                            test.profile?.includes('Riesgo') || test.profile?.includes('Baja') ?
+                                                            REPORT_TEMPLATES.autoestima_motivacion.risk : REPORT_TEMPLATES.autoestima_motivacion.healthy
                                                         )}
-                                                        {test.testId === 'motivacion' && (
-                                                            test.scores?.Amotivacion > 3 ? REPORT_TEMPLATES.motivacion.amotivacion : 
-                                                            (test.scores?.Intrinsica > test.scores?.Extrinsica ? REPORT_TEMPLATES.motivacion.intrinsica : REPORT_TEMPLATES.motivacion.extrinsica)
+                                                        {test.testId === 'clima_convivencia' && (
+                                                            test.profile?.includes('Vulnerable') ?
+                                                            REPORT_TEMPLATES.clima_convivencia.vulnerable : REPORT_TEMPLATES.clima_convivencia.positive
                                                         )}
-                                                        {(!['chaea', 'socioemocional', 'motivacion'].includes(test.testId)) && (
-                                                            test.profile?.includes('Baja') || test.profile?.includes('Riesgo') ? 
-                                                            "ALERTA: Perfil descendido. Requiere refuerzo positivo y seguimiento académico cercano." :
-                                                            "Perfil satisfactorio. Continuar con el refuerzo de los logros alcanzados."
+                                                        {test.testId === 'afectividad_genero' && (
+                                                            test.profile?.includes('Requiere') ?
+                                                            REPORT_TEMPLATES.afectividad_genero.low : REPORT_TEMPLATES.afectividad_genero.adequate
+                                                        )}
+                                                        {test.testId === 'participacion' && (
+                                                            test.profile?.includes('Baja') ?
+                                                            "ALERTA: Baja participación ciudadana. Requiere estrategias de re-enganche comunitario." :
+                                                            "Nivel de participación adecuado. Continuar reforzando la formación ciudadana."
                                                         )}
                                                     </p>
                                                     <div className="hallazgo-box" style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '12px', fontSize: '0.85rem' }}>
                                                         <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>Hallazgo clave:</span> {test.profile}
                                                     </div>
-                                                    
-                                                    {test.testId === 'socioemocional' && (
-                                                        <div style={{ marginTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1rem' }}>
-                                                            <h5 style={{ color: '#ef4444', marginBottom: '0.5rem' }}>Respuestas Críticas Detectadas:</h5>
-                                                            <ul style={{ fontSize: '0.8rem', color: 'var(--text-muted)', listStyle: 'none', padding: 0 }}>
-                                                                {test.answers?.slice(0, 3).map((ans, idx) => (
-                                                                    <li key={idx} style={{ marginBottom: '0.4rem' }}>
-                                                                        - "{socioemocionalQuestions.find(q => q.id === ans.id)?.text}" ({ans.value} pts)
-                                                                    </li>
-                                                                ))}
-                                                            </ul>
-                                                        </div>
-                                                    )}
                                                 </div>
                                             </div>
                                         </div>

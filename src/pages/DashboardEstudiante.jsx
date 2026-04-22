@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Compass, Smile, Frown, ShieldAlert, BookOpen, BrainCircuit, Sparkles, Award, ChevronRight, User, X, AlertCircle, Lightbulb, Loader2, Globe, HelpCircle } from 'lucide-react';
+import { Compass, Smile, Frown, ShieldAlert, BookOpen, BrainCircuit, Sparkles, Award, ChevronRight, User, X, AlertCircle, Lightbulb, Loader2, Globe, HelpCircle, Heart, Shield } from 'lucide-react';
 import PsychosocialTests from '../components/PsychosocialTests';
 import { getTestResults } from '../services/psychosocialService';
 import './DashboardEstudiante.css';
@@ -140,13 +140,11 @@ export default function DashboardEstudiante() {
     }
 
     const testList = [
-        { id: 'chaea', title: 'Estilos de Aprendizaje', desc: 'Identifica cómo prefieres aprender.', icon: Sparkles },
-        { id: 'socioemocional', title: 'Adaptación Socioemocional', desc: 'Tu bienestar y autoconocimiento.', icon: ShieldAlert },
-        { id: 'motivacion', title: 'Motivación Educativa', desc: '¿Qué te impulsa a estudiar?', icon: Compass },
-        { id: 'autoeficacia', title: 'Autoeficacia Académica', desc: 'Confianza en tus capacidades.', icon: BrainCircuit },
-        { id: 'clima', title: 'Clima y Seguridad', desc: 'Tu percepción de la jornada nocturna.', icon: Award },
         { id: 'participacion', title: 'Participación Ciudadana', desc: 'Tu interés e involucramiento en la comunidad educativa.', icon: Globe },
-        { id: 'dcsej', title: 'Desafío Grupal (Historia)', desc: 'Resuelve situaciones de convivencia.', icon: ChevronRight }
+        { id: 'clima_convivencia', title: 'Clima y Convivencia Escolar', desc: 'Tu percepción del ambiente y la convivencia en el CEIA.', icon: Shield },
+        { id: 'autoestima_motivacion', title: 'Autoestima y Motivación Escolar', desc: 'Tu bienestar personal y lo que te impulsa a estudiar.', icon: BrainCircuit },
+        { id: 'afectividad_genero', title: 'Afectividad, Sexualidad y Género', desc: 'Autoconocimiento, relaciones saludables y derechos.', icon: Heart },
+        { id: 'chaea', title: 'Estilos de Aprendizaje (CHAEA)', desc: 'Identifica cómo prefieres aprender.', icon: Sparkles, extra: true }
     ];
 
     const progressPercentage = Math.round((completedTests.length / testList.length) * 100);
@@ -184,7 +182,7 @@ export default function DashboardEstudiante() {
                             <span className="stat-label">Progreso</span>
                         </div>
                         <div className="stat">
-                            <span className="stat-val text-gradient">{completedTests.length}/7</span>
+                            <span className="stat-val text-gradient">{completedTests.length}/{testList.length}</span>
                             <span className="stat-label">Completados</span>
                         </div>
                     </div>
