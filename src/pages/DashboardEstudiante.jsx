@@ -282,6 +282,50 @@ export default function DashboardEstudiante() {
                     </div>
                 </section>
             </div>
+
+            <AnimatePresence>
+                {showInstructions && (
+                    <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 10000, background: 'rgba(0,0,0,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(10px)' }}>
+                        <motion.div 
+                            initial={{ scale: 0.9, opacity: 0 }} 
+                            animate={{ scale: 1, opacity: 1 }} 
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            className="glass-panel" 
+                            style={{ padding: '3rem', maxWidth: '600px', width: '90%', position: 'relative', border: '1px solid var(--primary)' }}
+                        >
+                            <button onClick={() => setShowInstructions(false)} className="close-btn" style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'transparent', border: 'none', color: 'white', cursor: 'pointer' }}><X size={24} /></button>
+                            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                                <AlertCircle size={48} color="var(--primary)" style={{ marginBottom: '1rem' }} />
+                                <h2 style={{ fontSize: '1.8rem', marginBottom: '0.5rem' }}>Guía de Aplicación</h2>
+                                <p style={{ color: 'var(--text-muted)' }}>Sigue estos pasos para completar tus encuestas correctamente.</p>
+                            </div>
+                            
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', textAlign: 'left' }}>
+                                <div style={{ display: 'flex', gap: '1rem' }}>
+                                    <div style={{ minWidth: '32px', height: '32px', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>1</div>
+                                    <p style={{ margin: 0 }}><strong>Selecciona tu emoción:</strong> Indica cómo te sientes hoy en el Diario de Emociones.</p>
+                                </div>
+                                <div style={{ display: 'flex', gap: '1rem' }}>
+                                    <div style={{ minWidth: '32px', height: '32px', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>2</div>
+                                    <p style={{ margin: 0 }}><strong>Completa las 4 obligatorias:</strong> Debes terminar las primeras 4 encuestas para completar tu perfil psicosocial profesional.</p>
+                                </div>
+                                <div style={{ display: 'flex', gap: '1rem' }}>
+                                    <div style={{ minWidth: '32px', height: '32px', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>3</div>
+                                    <p style={{ margin: 0 }}><strong>Escala Likert:</strong> Responde con total honestidad. No hay respuestas correctas o incorrectas, solo tu percepción sincera.</p>
+                                </div>
+                                <div style={{ display: 'flex', gap: '1rem' }}>
+                                    <div style={{ minWidth: '32px', height: '32px', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>4</div>
+                                    <p style={{ margin: 0 }}><strong>CHAEA (Opcional):</strong> La quinta encuesta es para conocer tu estilo de aprendizaje y no afecta tu progreso obligatorio.</p>
+                                </div>
+                            </div>
+                            
+                            <button onClick={() => setShowInstructions(false)} className="btn btn-primary" style={{ width: '100%', marginTop: '2.5rem', padding: '1rem' }}>
+                                Entendido, ¡Comenzar!
+                            </button>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </motion.div>
     );
 }

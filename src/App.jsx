@@ -63,7 +63,6 @@ const Layout = ({ children, setShowCredits }) => (
     <footer className="app-footer" style={{ textAlign: 'center', padding: '3rem', opacity: 0.8 }}>
       <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'center', gap: '1.5rem' }}>
         <button onClick={() => setShowCredits(true)} className="glass-btn"><Code2 size={18} /> Créditos</button>
-        <NavLink to="/video-presentacion" className="glass-btn" style={{ color: 'var(--primary)', border: '1px solid var(--primary)' }}><Rocket size={18} /> Ver Pitch Galáctico</NavLink>
       </div>
       <p>App creada por <strong>Juan P. Ramirez</strong> | El Nexo Tecnológico</p>
     </footer>
